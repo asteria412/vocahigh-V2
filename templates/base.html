@@ -30,14 +30,19 @@
          상단 네비게이션 바
     ================================================================ -->
     <nav class="navbar">
-        <a href="{{ url_for('main.home') }}" class="nav-brand">voca海</a>
+        <a href="{{ url_for('main.home') }}" class="nav-brand"><span class="nav-brand__voca">voca</span><span class="nav-brand__sea">海</span><span class="nav-brand__high">(high)</span></a>
 
         <div class="nav-links">
             {% if current_user.is_authenticated %}
                 <!-- 로그인 상태 -->
-                <span class="nav-nickname">{{ current_user.nickname }}</span>
-                <a href="{{ url_for('vocab.index') }}" class="nav-link">단어장</a>
-                <a href="{{ url_for('board.list') }}" class="nav-link">게시판</a>
+                <span class="nav-status">🟢 {{ current_user.nickname }}님 접속중</span>
+                <a href="{{ url_for('vocab.index') }}" class="nav-link {% if request.endpoint and request.endpoint.startswith('vocab') %}nav-link--active{% endif %}">단어장</a>
+                <a href="{{ url_for('quiz.setup') }}" class="nav-link {% if request.endpoint and request.endpoint.startswith('quiz') %}nav-link--active{% endif %}">단어시험</a>
+                <a href="{{ url_for('wordorder.setup') }}" class="nav-link {% if request.endpoint and request.endpoint.startswith('wordorder') %}nav-link--active{% endif %}">어순연습</a>
+                <a href="{{ url_for('writing.index') }}" class="nav-link {% if request.endpoint and request.endpoint.startswith('writing') %}nav-link--active{% endif %}">작문</a>
+                <a href="{{ url_for('dictionary.index') }}" class="nav-link {% if request.endpoint and request.endpoint.startswith('dictionary') %}nav-link--active{% endif %}">사전</a>
+                <a href="{{ url_for('dashboard.index') }}" class="nav-link {% if request.endpoint and request.endpoint.startswith('dashboard') %}nav-link--active{% endif %}">대시보드</a>
+                <a href="{{ url_for('board.list') }}" class="nav-link {% if request.endpoint and request.endpoint.startswith('board') %}nav-link--active{% endif %}">학습상담</a>
                 <a href="{{ url_for('auth.logout') }}" class="nav-link">로그아웃</a>
             {% else %}
                 <!-- 비로그인 상태 -->

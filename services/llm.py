@@ -3,9 +3,8 @@
 import os, json
 import pandas as pd
 from openai import OpenAI
-import streamlit as st
 from dotenv import load_dotenv
-import random 
+import random
 
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -38,11 +37,10 @@ def process_vocab_with_llm(df, raw_text):
     repair_targets = df[df['flags'] != 'OK'].copy()
     if repair_targets.empty: return df
 
-    progress_bar = st.progress(0)
     indices_to_drop = [] # 노이즈(가짜 단어)로 판명된 행 보관함
 
     # 2. 유기적 대조 시작
-    for i, (idx, row) in enumerate(repair_targets.iterrows()):
+    for idx, row in repair_targets.iterrows():
         target_zh = row['zh']
         
         # [원리] find()로 원본 내 '좌표' 확보하여 잽싸게 이동
@@ -78,7 +76,6 @@ def process_vocab_with_llm(df, raw_text):
             # 원본에 한자 자체가 없으면 유령 데이터이므로 삭제
             indices_to_drop.append(idx)
         
-        progress_bar.progress((i + 1) / len(repair_targets))
 
     # 3. [최종 정제] 가짜 단어들을 쳐내어 개수를 원본에 맞게 수렴시킴
     if indices_to_drop:

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}작문 100번 — voca海{% endblock %}
+
+{% block content %}
+<div class="writing-tabs">
+    <a href="{{ url_for('writing.setup_99') }}" class="writing-tab">99번 제시어</a>
+    <a href="{{ url_for('writing.setup_100') }}" class="writing-tab writing-tab--active">100번 그림</a>
+</div>
+
+<p class="page-desc" style="margin-top:var(--space-md);">
+    4대 빈출 테마(비즈니스 / 일상 / 스포츠 / 학습) 중 AI가 랜덤으로 상황을 만들고
+    DALL-E가 그림을 그려줍니다. 그림을 보고 80자 내외로 작문하세요.
+</p>
+
+<form method="POST" action="{{ url_for('writing.gen_100') }}">
+    <button type="submit" class="btn btn--primary btn--full">문제 받기</button>
+    <p class="form-hint" style="text-align:center;margin-top:var(--space-sm);">
+        상황 생성 + 이미지 제작으로 약 20~30초 소요될 수 있어요.
+    </p>
+</form>
+{% endblock %}

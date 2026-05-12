@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block title %}단어시험 설정 — voca海{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2 class="page-title">단어시험</h2>
+</div>
+<p class="page-desc">단어장을 선택하고 문제 수를 정해서 시험을 시작해요.</p>
+
+{% if not list_info %}
+    <div class="empty-state">
+        <span style="font-size:2.5rem;">📂</span>
+        <p>아직 단어장이 없어요.</p>
+        <a href="{{ url_for('vocab.upload') }}" class="btn btn--primary">단어장 업로드하기</a>
+    </div>
+{% else %}
+<form method="POST" action="{{ url_for('quiz.start') }}" id="setup-form">
+
+    <!-- 단어장 선택 -->
+    <div class="form-group">
+        <label class="form-label">
+            단어장 선택
+            <span class="form-hint">최대 {{ max_lists }}개까지 선택 가능 (함께 섞여서 출제됩니다)</span>
+        </label>
+        <div class="quiz-list-grid">
+            {% for item in list_info %}
+            <label class="quiz-list-card" for="list_{{ item.id }}">
+                <input type="checkbox" id="list_{{ item.id }}" name="list_ids"
+                       value="{{ item.id }}" class="quiz-list-checkbox">
+                <div class="quiz-list-info">
+                    <span class="quiz-list-name">{{ item.name }}</span>
+                    <span class="quiz-list-count">{{ item.count }}개</span>
+                </div>
+            </label>
+            {% endfor %}
+        </div>
+        <p id="select-warning" class="form-hint" style="color:var(--color-danger);display:none;margin-top:6px;">
+            최대 {{ max_lists }}개까지만 선택할 수 있어요.
+        </p>
+    </div>
+
+    <!-- 문제 수 -->
+    <div class="form-group">
+        <label class="form-label">
+            문제 수
+            <span class="form-hint" id="count-hint"></span>
+        </label>
+        <div class="slider-wrap">
+            <input type="range" id="q_count" name="q_count"
+                   min="10" max="100" step="10" value="10"
+                   class="quiz-slider">
+            <span class="slider-value" id="slider-display">10문제</span>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--full">시험 시작하기</button>
+</form>
+{% endif %}
+
+<p style="margin-top:var(--space-lg);text-align:center;font-size:0.9rem;">
+    <a href="{{ url_for('vocab.index') }}">← 내 단어장으로</a>
+</p>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    const checkboxes  = document.querySelectorAll('.quiz-list-checkbox');
+    const warning     = document.getElementById('select-warning');
+    const countHint   = document.getElementById('count-hint');
+    const slider      = document.getElementById('q_count');
+    const sliderDisp  = document.getElementById('slider-display');
+    const MAX         = {{ max_lists }};
+
+    const wordCounts = {
+        {% for item in list_info %}
+        {{ item.id }}: {{ item.count }},
+        {% endfor %}
+    };
+
+    function getSelectedTotal() {
+        let total = 0;
+        checkboxes.forEach(cb => {
+            if (cb.checked) total += wordCounts[parseInt(cb.value)];
+        });
+        return total;
+    }
+
+    function updateUI() {
+        const checkedCount = [...checkboxes].filter(cb => cb.checked).length;
+        const total = getSelectedTotal();
+
+        checkboxes.forEach(cb => {
+            cb.disabled = !cb.checked && checkedCount >= MAX;
+        });
+        warning.style.display = checkedCount >= MAX ? 'block' : 'none';
+
+        // 힌트: 선택된 단어 총 개수 표시
+        countHint.textContent = total > 0 ? `(선택된 단어 ${total}개)` : '';
+    }
+
+    // 슬라이더 값 표시
+    slider.addEventListener('input', () => {
+        sliderDisp.textContent = slider.value + '문제';
+    });
+
+    checkboxes.forEach(cb => cb.addEventListener('change', updateUI));
+    updateUI();
+</script>
+{% endblock %}

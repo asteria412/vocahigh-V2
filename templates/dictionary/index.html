@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block title %}단어사전 — voca海{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2 class="page-title">AI 단어사전</h2>
+</div>
+<p class="page-desc">한자 또는 한국어 뜻으로 검색하세요. 내 단어장 전체와 AI 지식을 동시에 활용합니다.</p>
+
+<!-- 검색 폼 -->
+<form method="GET" action="{{ url_for('dictionary.index') }}" class="dict-search-form">
+    <input class="form-input dict-search-input" type="text" name="q"
+           value="{{ keyword }}"
+           placeholder="예: 아끼다 / 节约"
+           autocomplete="off" autocorrect="off" spellcheck="false">
+    <button type="submit" class="btn btn--primary">검색</button>
+</form>
+
+{% if keyword %}
+
+<!-- 내 단어장 결과 -->
+<div class="dict-section">
+    <p class="dict-section-title">
+        내 단어장 결과
+        {% if local_results %}
+        <span class="dict-count">{{ local_results | length }}개</span>
+        {% endif %}
+    </p>
+
+    {% if local_results %}
+        {% for w in local_results %}
+        <div class="dict-card">
+            <div class="dict-card__main">
+                <span class="dict-card__zh">{{ w.zh }}</span>
+                {% if w.pinyin %}
+                <span class="dict-card__pinyin">{{ w.pinyin }}</span>
+                {% endif %}
+                {% if w.pos %}
+                <span class="dict-card__pos">{{ w.pos }}</span>
+                {% endif %}
+            </div>
+            <p class="dict-card__ko">{{ w.ko }}</p>
+            <p class="dict-card__list">{{ w.vocab_list.name }}</p>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="dict-empty">내 단어장에 일치하는 단어가 없어요.</p>
+    {% endif %}
+</div>
+
+<!-- AI 검색 -->
+<div class="dict-section">
+    <p class="dict-section-title">AI 상세 검색</p>
+
+    {% if ai_result %}
+        <div class="dict-card dict-card--ai">
+            <div class="dict-card__main">
+                <span class="dict-card__zh">{{ ai_result.word }}</span>
+                {% if ai_result.pinyin %}
+                <span class="dict-card__pinyin">{{ ai_result.pinyin }}</span>
+                {% endif %}
+                {% if ai_result.pos %}
+                <span class="dict-card__pos">{{ ai_result.pos }}</span>
+                {% endif %}
+            </div>
+            <p class="dict-card__ko">{{ ai_result.meaning }}</p>
+            {% if ai_result.example_cn %}
+            <div class="dict-example">
+                <p class="dict-example__cn">{{ ai_result.example_cn }}</p>
+                <p class="dict-example__kr">{{ ai_result.example_kr }}</p>
+            </div>
+            {% endif %}
+        </div>
+    {% elif ai_error is defined and ai_error %}
+        <p class="dict-empty">AI 검색에 실패했어요. 다시 시도해주세요.</p>
+    {% else %}
+        <form method="POST" action="{{ url_for('dictionary.ai_search') }}">
+            <input type="hidden" name="keyword" value="{{ keyword }}">
+            <button type="submit" class="btn btn--outline btn--full">
+                AI에게 '{{ keyword }}' 상세 검색 요청
+            </button>
+            <p class="form-hint" style="text-align:center;margin-top:var(--space-xs);">
+                예문과 상세 정보를 포함해서 알려드립니다.
+            </p>
+        </form>
+    {% endif %}
+</div>
+
+{% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // 페이지 로드 시 검색창에 포커스
+    document.querySelector('.dict-search-input').focus();
+</script>
+{% endblock %}

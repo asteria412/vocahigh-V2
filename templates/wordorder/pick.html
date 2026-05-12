@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block title %}단어 선택 — voca海{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2 class="page-title">단어 선택</h2>
+</div>
+<p class="page-desc">문장에 넣을 단어를 1~{{ max_words }}개 선택하세요.<br>
+<span class="form-hint">선택 후 화면 하단의 'AI 문장 만들기' 버튼을 눌러주세요.</span></p>
+
+<form method="POST" action="{{ url_for('wordorder.generate') }}" id="pick-form">
+
+    <!-- 상단 컨트롤 -->
+    <div class="pick-controls">
+        <span id="pick-count" class="pick-count-badge">0 / {{ max_words }} 선택</span>
+        <button type="button" id="random-btn" class="btn btn--outline btn--sm">랜덤 선택</button>
+    </div>
+
+    <!-- 단어 목록 -->
+    <div class="word-pick-list">
+        {% for w in word_list %}
+        <label class="word-pick-card" for="word_{{ w.id }}">
+            <input type="checkbox" id="word_{{ w.id }}" name="word_ids"
+                   value="{{ w.id }}" class="word-pick-cb">
+            <div class="word-pick-info">
+                <span class="word-pick-zh">{{ w.zh }}</span>
+                <span class="word-pick-ko">{{ w.ko }}{% if w.pos %} <em>{{ w.pos }}</em>{% endif %}</span>
+            </div>
+            {% if w.list_name %}
+            <span class="word-pick-tag">{{ w.list_name }}</span>
+            {% endif %}
+        </label>
+        {% endfor %}
+    </div>
+
+    <p id="pick-warning" class="form-hint"
+       style="color:var(--color-danger);display:none;margin:var(--space-sm) 0;">
+        최대 {{ max_words }}개까지만 선택할 수 있어요.
+    </p>
+</form>
+
+<!-- 하단 고정 버튼 -->
+<div class="sticky-submit">
+    <button type="submit" form="pick-form" id="submit-btn"
+            class="btn btn--primary btn--full" disabled>
+        AI 문장 만들기
+    </button>
+</div>
+
+<p style="margin-top:var(--space-lg);text-align:center;font-size:0.9rem;">
+    <a href="{{ url_for('wordorder.setup') }}">← 단어장 다시 선택</a>
+</p>
+<div class="sticky-bottom-pad"></div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    const checkboxes  = document.querySelectorAll('.word-pick-cb');
+    const countBadge  = document.getElementById('pick-count');
+    const warning     = document.getElementById('pick-warning');
+    const submitBtn   = document.getElementById('submit-btn');
+    const randomBtn   = document.getElementById('random-btn');
+    const MAX         = {{ max_words }};
+
+    function updateUI() {
+        const checked = [...checkboxes].filter(cb => cb.checked).length;
+        countBadge.textContent = `${checked} / ${MAX} 선택`;
+        warning.style.display = checked > MAX ? 'block' : 'none';
+        submitBtn.disabled = checked === 0 || checked > MAX;
+
+        checkboxes.forEach(cb => {
+            cb.disabled = !cb.checked && checked >= MAX;
+            cb.closest('.word-pick-card').classList.toggle('word-pick-card--selected', cb.checked);
+            cb.closest('.word-pick-card').classList.toggle('word-pick-card--disabled', cb.disabled);
+        });
+    }
+
+    checkboxes.forEach(cb => cb.addEventListener('change', updateUI));
+
+    // 랜덤 선택
+    randomBtn.addEventListener('click', () => {
+        checkboxes.forEach(cb => { cb.checked = false; });
+        const all = [...checkboxes];
+        const count = Math.floor(Math.random() * MAX) + 1; // 1~MAX
+        const shuffled = all.sort(() => Math.random() - 0.5).slice(0, count);
+        shuffled.forEach(cb => { cb.checked = true; });
+        updateUI();
+    });
+
+    updateUI();
+</script>
+{% endblock %}

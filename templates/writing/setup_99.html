@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}작문 99번 — voca海{% endblock %}
+
+{% block content %}
+<!-- 탭 네비게이션 -->
+<div class="writing-tabs">
+    <a href="{{ url_for('writing.setup_99') }}" class="writing-tab writing-tab--active">99번 제시어</a>
+    <a href="{{ url_for('writing.setup_100') }}" class="writing-tab">100번 그림</a>
+</div>
+
+<p class="page-desc" style="margin-top:var(--space-md);">
+    내 단어 3개 + AI 트렌드 2개를 섞어서 제시어 5개를 출제합니다.
+</p>
+
+{% if not list_info %}
+    <div class="empty-state">
+        <span style="font-size:2.5rem;">📂</span>
+        <p>단어장이 없어요. 먼저 단어장을 업로드해주세요.</p>
+        <a href="{{ url_for('vocab.upload') }}" class="btn btn--primary">단어장 업로드</a>
+    </div>
+{% else %}
+<form method="POST" action="{{ url_for('writing.gen_99') }}">
+    <div class="form-group">
+        <label class="form-label">
+            단어장 선택
+            <span class="form-hint">최대 {{ max_lists }}개 — 여기서 3개를 랜덤 추출합니다</span>
+        </label>
+        <div class="quiz-list-grid">
+            {% for item in list_info %}
+            <label class="quiz-list-card" for="list_{{ item.id }}">
+                <input type="checkbox" id="list_{{ item.id }}" name="list_ids"
+                       value="{{ item.id }}" class="quiz-list-checkbox">
+                <div class="quiz-list-info">
+                    <span class="quiz-list-name">{{ item.name }}</span>
+                    <span class="quiz-list-count">{{ item.count }}개</span>
+                </div>
+            </label>
+            {% endfor %}
+        </div>
+        <p id="select-warning" class="form-hint"
+           style="color:var(--color-danger);display:none;margin-top:6px;">
+            최대 {{ max_lists }}개까지 선택 가능해요.
+        </p>
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--full">AI 문제 생성하기</button>
+    <p class="form-hint" style="text-align:center;margin-top:var(--space-sm);">
+        GPT-4o가 문장을 만들어서 약 10~20초 소요될 수 있어요.
+    </p>
+</form>
+{% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    const checkboxes = document.querySelectorAll('.quiz-list-checkbox');
+    const warning    = document.getElementById('select-warning');
+    const MAX        = {{ max_lists }};
+
+    function updateUI() {
+        const checked = [...checkboxes].filter(cb => cb.checked).length;
+        checkboxes.forEach(cb => { cb.disabled = !cb.checked && checked >= MAX; });
+        warning.style.display = checked >= MAX ? 'block' : 'none';
+    }
+    checkboxes.forEach(cb => cb.addEventListener('change', updateUI));
+</script>
+{% endblock %}

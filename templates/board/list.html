@@ -2,9 +2,71 @@
 {% block title %}학습 상담 게시판 — voca海{% endblock %}
 
 {% block content %}
-<div class="board">
-    <h2 class="board__title">학습 상담 게시판</h2>
-    <!-- Day 15에 실제 게시글 목록 구현 예정 -->
-    <p>게시글 목록이 여기 들어와요.</p>
+<div class="page-header">
+    <h2 class="page-title">학습 상담 게시판</h2>
+    <a href="{{ url_for('board.write') }}" class="btn btn--primary">✏️ 질문하기</a>
 </div>
+
+<!-- 필터 탭 -->
+<div class="board-filter">
+    <a href="{{ url_for('board.list', status='all') }}"
+       class="board-filter__tab {% if filter_status == 'all' %}board-filter__tab--active{% endif %}">전체</a>
+    <a href="{{ url_for('board.list', status='unanswered') }}"
+       class="board-filter__tab {% if filter_status == 'unanswered' %}board-filter__tab--active{% endif %}">답변 대기</a>
+    <a href="{{ url_for('board.list', status='answered') }}"
+       class="board-filter__tab {% if filter_status == 'answered' %}board-filter__tab--active{% endif %}">답변 완료</a>
+</div>
+
+{% if posts %}
+<ul class="post-list">
+    {% for post in posts %}
+    <li class="post-item">
+        <a href="{{ url_for('board.detail', post_id=post.id) }}" class="post-item__link">
+            <div class="post-item__top">
+                <span class="post-badge {% if post.is_answered %}post-badge--answered{% else %}post-badge--waiting{% endif %}">
+                    {{ '답변 완료' if post.is_answered else '답변 대기' }}
+                </span>
+                <span class="post-item__title">{{ post.title }}</span>
+            </div>
+            <div class="post-item__meta">
+                <span>{{ post.author.nickname }}</span>
+                <span>{{ post.created_at.strftime('%Y.%m.%d') }}</span>
+                {% if post.replies.count() > 0 %}
+                <span>💬 {{ post.replies.count() }}</span>
+                {% endif %}
+            </div>
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+
+<!-- 페이지네이션 -->
+{% if pagination.pages > 1 %}
+<div class="pagination">
+    {% if pagination.has_prev %}
+    <a href="{{ url_for('board.list', page=pagination.prev_num, status=filter_status) }}" class="pagination__btn">← 이전</a>
+    {% endif %}
+
+    {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+        {% if p %}
+            <a href="{{ url_for('board.list', page=p, status=filter_status) }}"
+               class="pagination__btn {% if p == pagination.page %}pagination__btn--active{% endif %}">{{ p }}</a>
+        {% else %}
+            <span class="pagination__dots">…</span>
+        {% endif %}
+    {% endfor %}
+
+    {% if pagination.has_next %}
+    <a href="{{ url_for('board.list', page=pagination.next_num, status=filter_status) }}" class="pagination__btn">다음 →</a>
+    {% endif %}
+</div>
+{% endif %}
+
+{% else %}
+<div class="empty-state">
+    <p>아직 게시글이 없어요.</p>
+    <p>궁금한 점이 있으면 질문해보세요!</p>
+    <a href="{{ url_for('board.write') }}" class="btn btn--primary" style="margin-top:var(--space-md);">첫 질문하기</a>
+</div>
+{% endif %}
 {% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}작문 결과 — voca海{% endblock %}
+
+{% block content %}
+<div class="writing-tabs">
+    <a href="{{ url_for('writing.setup_99') }}" class="writing-tab">99번 제시어</a>
+    <a href="{{ url_for('writing.setup_100') }}" class="writing-tab writing-tab--active">100번 그림</a>
+</div>
+
+<!-- 점수 -->
+<div class="score-card {% if feedback.score >= 80 %}score-card--pass{% endif %}"
+     style="margin-top:var(--space-md);">
+    <div class="score-card__label">AI 채점 점수</div>
+    <div class="score-card__value">{{ feedback.score }}<span class="score-card__unit">점</span></div>
+    <div class="score-card__detail">
+        {% if feedback.score >= 80 %}합격권입니다!{% else %}조금 더 분발해요!{% endif %}
+    </div>
+</div>
+
+<!-- 문제 이미지 (참고용) -->
+{% if data.image_url %}
+<img src="{{ data.image_url }}" alt="문제 이미지"
+     style="width:100%;border-radius:var(--radius-md);margin:var(--space-lg) 0;">
+{% endif %}
+
+<!-- 내 답 vs 모범 답안 -->
+<div class="writing-compare">
+    <div class="writing-box writing-box--mine">
+        <p class="writing-box__label">내 답안</p>
+        <p class="writing-box__text">{{ user_input }}</p>
+    </div>
+    <div class="writing-box writing-box--answer">
+        <p class="writing-box__label">모범 답안</p>
+        <p class="writing-box__text">{{ feedback.correction }}</p>
+        {% if feedback.translation %}
+        <p class="writing-box__trans">{{ feedback.translation }}</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- 상세 첨삭 -->
+<div class="writing-feedback">
+    <p class="writing-feedback__title">상세 첨삭</p>
+    <p class="writing-feedback__text">{{ feedback.explanation }}</p>
+    {% if feedback.better_expression %}
+    <p class="writing-feedback__tip">추천 표현: {{ feedback.better_expression }}</p>
+    {% endif %}
+</div>
+
+<p class="writing-notice">
+    AI 채점 결과는 실제 시험과 다를 수 있으니 연습 용도로만 참고하세요.
+</p>
+
+<div style="display:flex;gap:var(--space-md);margin-top:var(--space-xl);flex-wrap:wrap;">
+    <a href="{{ url_for('writing.setup_100') }}" class="btn btn--primary" style="flex:1;">새 문제 풀기</a>
+    <a href="{{ url_for('writing.setup_99') }}" class="btn btn--outline" style="flex:1;">99번 도전</a>
+</div>
+{% endblock %}

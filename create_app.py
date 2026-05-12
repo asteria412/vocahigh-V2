@@ -39,12 +39,22 @@ def create_app(config_name='default'):
     from blueprints.auth import auth_bp
     from blueprints.board import board_bp
     from blueprints.vocab import vocab_bp
+    from blueprints.quiz import quiz_bp
+    from blueprints.wordorder import wordorder_bp
+    from blueprints.writing import writing_bp
+    from blueprints.dictionary import dictionary_bp
+    from blueprints.dashboard import dashboard_bp
 
     # url_prefix: 각 Blueprint의 URL 앞에 붙는 경로
-    app.register_blueprint(main_bp)                        # /
-    app.register_blueprint(auth_bp, url_prefix='/auth')    # /auth/login, /auth/register
-    app.register_blueprint(board_bp, url_prefix='/board')  # /board/
-    app.register_blueprint(vocab_bp, url_prefix='/vocab')  # /vocab/
+    app.register_blueprint(main_bp)                                    # /
+    app.register_blueprint(auth_bp, url_prefix='/auth')                # /auth/
+    app.register_blueprint(board_bp, url_prefix='/board')              # /board/
+    app.register_blueprint(vocab_bp, url_prefix='/vocab')              # /vocab/
+    app.register_blueprint(quiz_bp, url_prefix='/quiz')                # /quiz/
+    app.register_blueprint(wordorder_bp, url_prefix='/wordorder')      # /wordorder/
+    app.register_blueprint(writing_bp, url_prefix='/writing')          # /writing/
+    app.register_blueprint(dictionary_bp, url_prefix='/dictionary')    # /dictionary/
+    app.register_blueprint(dashboard_bp, url_prefix='/dashboard')      # /dashboard/
 
     # -------------------------------------------------------------------
     # 에러 핸들러 등록

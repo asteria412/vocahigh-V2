@@ -29,6 +29,8 @@
             <p id="file-name" class="form-hint" style="margin-top:8px;"></p>
         </div>
 
+        <p class="tutorial-caution">⚠️ 이미지 기반 PDF(스캔본)는 텍스트 인식이 어려울 수 있어요. 텍스트 선택이 되는 PDF를 사용해주세요.</p>
+
         <button type="submit" class="btn btn--primary btn--full">파싱 시작</button>
     </form>
 
@@ -39,10 +41,37 @@
 
 {% block extra_scripts %}
 <script>
-    // 파일 선택 시 파일명 표시
-    document.getElementById('file').addEventListener('change', function() {
-        const name = this.files[0]?.name || '';
-        document.getElementById('file-name').textContent = name ? '선택된 파일: ' + name : '';
+    const fileInput = document.getElementById('file');
+    const dropZone = document.querySelector('.file-drop');
+    const fileNameEl = document.getElementById('file-name');
+
+    function showFileName(name) {
+        fileNameEl.textContent = name ? '선택된 파일: ' + name : '';
+    }
+
+    fileInput.addEventListener('change', function() {
+        showFileName(this.files[0]?.name || '');
+    });
+
+    dropZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.style.borderColor = 'var(--color-primary)';
+    });
+
+    dropZone.addEventListener('dragleave', function() {
+        this.style.borderColor = '';
+    });
+
+    dropZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.style.borderColor = '';
+        const file = e.dataTransfer.files[0];
+        if (file) {
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            fileInput.files = dt.files;
+            showFileName(file.name);
+        }
     });
 </script>
 {% endblock %}

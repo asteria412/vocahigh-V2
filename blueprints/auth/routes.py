@@ -2,7 +2,7 @@
 # blueprints/auth/routes.py - 회원가입 / 로그인 / 로그아웃
 # =====================================================================
 
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request, session
 from flask_login import login_user, logout_user, login_required, current_user
 from extensions import db
 from models.user import User
@@ -130,9 +130,13 @@ def login():
             flash('이메일 또는 비밀번호가 올바르지 않아요.', 'danger')
             return render_template('auth/login.html', form_data={'email': email})
 
-        # 로그인 처리 (세션에 유저 정보 저장)
-        # remember=True: 브라우저 닫아도 로그인 유지
-        login_user(user, remember=True)
+        # 로그인 처리 — "로그인 유지" 체크 여부에 따라 쿠키 영속성 결정
+        remember_me = bool(request.form.get('remember_me'))
+        if not remember_me:
+            # permanent=True로 설정해야 PERMANENT_SESSION_LIFETIME(4시간)이 적용됨
+            # Chrome 세션복원이 쿠키를 되살려도 4시간 지나면 자동 로그아웃
+            session.permanent = True
+        login_user(user, remember=remember_me)
         flash(f'어서 와요, {user.nickname}님!', 'success')
 
         # 로그인 전에 가려던 페이지가 있으면 거기로, 없으면 홈으로

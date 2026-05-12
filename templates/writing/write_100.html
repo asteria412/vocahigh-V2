@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}작문 100번 — voca海{% endblock %}
+
+{% block content %}
+<div class="writing-tabs">
+    <a href="{{ url_for('writing.setup_99') }}" class="writing-tab">99번 제시어</a>
+    <a href="{{ url_for('writing.setup_100') }}" class="writing-tab writing-tab--active">100번 그림</a>
+</div>
+
+<!-- 이미지 or 텍스트 묘사 -->
+<div style="margin-top:var(--space-md);">
+    {% if data.image_url %}
+    <img src="{{ data.image_url }}" alt="작문 문제 이미지"
+         style="width:100%;border-radius:var(--radius-md);margin-bottom:var(--space-md);">
+    <details style="margin-bottom:var(--space-md);">
+        <summary style="font-size:0.85rem;color:var(--color-text-muted);cursor:pointer;">
+            그림이 잘 안 보이나요? (상황 묘사 텍스트 보기)
+        </summary>
+        <p style="margin-top:var(--space-sm);font-size:0.9rem;color:var(--color-text-muted);">
+            {{ data.scene_desc }}
+        </p>
+    </details>
+    {% else %}
+    <div class="wo-hint-card" style="margin-bottom:var(--space-md);">
+        <p class="wo-hint-label">상황 묘사</p>
+        <p class="wo-hint-text">{{ data.scene_desc }}</p>
+    </div>
+    {% endif %}
+
+    {% if data.keywords %}
+    <p class="form-hint" style="margin-bottom:var(--space-md);">
+        추천 키워드: {{ data.keywords | join(', ') }}
+    </p>
+    {% endif %}
+</div>
+
+<div class="writing-mission">
+    위 그림 상황에 맞게 80자 내외로 작문하세요.
+</div>
+
+<form method="POST" action="{{ url_for('writing.eval_100') }}">
+    <div class="form-group">
+        <textarea class="form-input writing-textarea" name="user_input"
+                  placeholder="여기에 중국어로 작문하세요..."
+                  rows="6" id="writing-input"></textarea>
+        <p class="writing-char-count"><span id="char-count">0</span>자</p>
+    </div>
+    <button type="submit" class="btn btn--primary btn--full">제출하고 채점받기</button>
+    <p class="form-hint" style="text-align:center;margin-top:var(--space-sm);">
+        채점에 약 10~20초 소요될 수 있어요.
+    </p>
+</form>
+
+<p style="margin-top:var(--space-lg);text-align:center;font-size:0.9rem;">
+    <a href="{{ url_for('writing.setup_100') }}">← 새 문제 받기</a>
+</p>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    const input = document.getElementById('writing-input');
+    const counter = document.getElementById('char-count');
+    input.addEventListener('input', () => { counter.textContent = input.value.length; });
+</script>
+{% endblock %}

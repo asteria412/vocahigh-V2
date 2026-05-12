@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block title %}어순 배열 — voca海{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2 class="page-title">어순 배열 연습</h2>
+</div>
+
+<!-- 한국어 뜻 힌트 -->
+<div class="wo-hint-card">
+    <p class="wo-hint-label">해석</p>
+    <p class="wo-hint-text">{{ puzzle.korean }}</p>
+</div>
+
+<!-- 내가 조립 중인 문장 -->
+<div class="wo-section">
+    <p class="wo-section-label">완성 중인 문장 <small>(탭하면 취소)</small></p>
+    <div class="wo-answer-zone" id="answer-zone">
+        <p class="wo-empty-hint" id="answer-empty">조각을 탭해서 문장을 만들어보세요</p>
+    </div>
+</div>
+
+<!-- 단어 조각 -->
+<div class="wo-section">
+    <p class="wo-section-label">단어 조각 <small>(탭하면 추가)</small></p>
+    <div class="wo-pieces-zone" id="pieces-zone"></div>
+</div>
+
+<!-- 컨트롤 -->
+<div class="wo-controls">
+    <button type="button" class="btn btn--outline" id="reset-btn">초기화</button>
+    <button type="button" class="btn btn--primary" id="submit-btn">정답 확인</button>
+</div>
+
+<!-- 숨겨진 제출 폼 -->
+<form method="POST" action="{{ url_for('wordorder.check') }}" id="check-form">
+    <input type="hidden" name="user_sentence" id="user-sentence-input">
+</form>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    const PIECES       = {{ puzzle.shuffled_pieces | tojson }};
+    const answerZone   = document.getElementById('answer-zone');
+    const piecesZone   = document.getElementById('pieces-zone');
+    const emptyHint    = document.getElementById('answer-empty');
+    const resetBtn     = document.getElementById('reset-btn');
+    const submitBtn    = document.getElementById('submit-btn');
+    const checkForm    = document.getElementById('check-form');
+    const sentenceInput= document.getElementById('user-sentence-input');
+
+    // 상태
+    let userOrder = [];         // 조립된 순서 (piece 문자열 배열)
+    let remaining = [...PIECES]; // 남은 조각
+
+    function createPieceBtn(text, zone) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = zone === 'answer' ? 'wo-piece wo-piece--selected' : 'wo-piece';
+        btn.textContent = text;
+        return btn;
+    }
+
+    function render() {
+        // 정답 영역
+        answerZone.innerHTML = '';
+        if (userOrder.length === 0) {
+            answerZone.appendChild(emptyHint);
+            emptyHint.style.display = 'block';
+        } else {
+            emptyHint.style.display = 'none';
+            userOrder.forEach((piece, i) => {
+                const btn = createPieceBtn(piece, 'answer');
+                btn.addEventListener('click', () => {
+                    // 정답 영역에서 제거 → 남은 조각으로 복귀
+                    userOrder.splice(i, 1);
+                    remaining.push(piece);
+                    render();
+                });
+                answerZone.appendChild(btn);
+            });
+        }
+
+        // 조각 영역
+        piecesZone.innerHTML = '';
+        remaining.forEach((piece, i) => {
+            const btn = createPieceBtn(piece, 'piece');
+            btn.addEventListener('click', () => {
+                // 조각 → 정답 영역으로 이동
+                remaining.splice(i, 1);
+                userOrder.push(piece);
+                render();
+            });
+            piecesZone.appendChild(btn);
+        });
+
+        submitBtn.disabled = userOrder.length === 0;
+    }
+
+    resetBtn.addEventListener('click', () => {
+        userOrder = [];
+        remaining = [...PIECES];
+        render();
+    });
+
+    submitBtn.addEventListener('click', () => {
+        sentenceInput.value = userOrder.join('');
+        checkForm.submit();
+    });
+
+    render();
+</script>
+{% endblock %}

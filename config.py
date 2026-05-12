@@ -6,6 +6,7 @@
 # =====================================================================
 
 import os
+from datetime import timedelta
 from dotenv import load_dotenv
 
 # .env 파일에 있는 환경변수를 불러옴
@@ -27,6 +28,16 @@ class Config:
 
     # SQLAlchemy가 DB 변경사항을 자동으로 추적하는 기능 - 성능에 영향을 줘서 끔
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    # -------------------------------------------------------------------
+    # 세션 / 쿠키 만료 설정
+    # -------------------------------------------------------------------
+    # "로그인 유지" 미체크: 4시간 후 자동 로그아웃 (Chrome 세션복원 우회)
+    PERMANENT_SESSION_LIFETIME = timedelta(hours=4)
+    # "로그인 유지" 체크: 30일간 쿠키 유지
+    REMEMBER_COOKIE_DURATION = timedelta(days=30)
+    # 요청마다 세션 만료 시간 갱신 (활동 중엔 로그아웃 안 됨)
+    SESSION_REFRESH_EACH_REQUEST = True
 
     # -------------------------------------------------------------------
     # 파일 업로드 설정

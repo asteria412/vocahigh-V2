@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}시험 결과 — voca海{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2 class="page-title">채점 결과</h2>
+</div>
+
+<!-- 점수 카드 -->
+{% if final_total > 0 %}
+<div class="score-card">
+    <div class="score-card__label">최종 점수</div>
+    <div class="score-card__value">{{ score_pct }}<span class="score-card__unit">점</span></div>
+    <div class="score-card__detail">
+        {{ correct }} / {{ final_total }} 정답
+        {% if excluded > 0 %} ({{ excluded }}문제 제외){% endif %}
+    </div>
+</div>
+{% else %}
+<div class="flash flash--warning">모든 문제가 제외되어 점수를 계산할 수 없어요.</div>
+{% endif %}
+
+<!-- 문제별 결과 -->
+<div style="margin-top:var(--space-lg);">
+    {% for r in results %}
+    <div class="result-card {% if r.excluded %}result-card--excluded{% elif r.correct %}result-card--correct{% else %}result-card--wrong{% endif %}">
+        <div class="result-card__header">
+            <span class="result-card__num">{{ loop.index }}</span>
+            <span class="result-card__badge">
+                {% if r.excluded %}제외
+                {% elif r.correct %}정답
+                {% else %}오답
+                {% endif %}
+            </span>
+        </div>
+
+        {% if not r.excluded %}
+        <div class="result-card__body">
+            <div class="result-row">
+                <span class="result-label">문제</span>
+                <span class="result-value">
+                    {% if r.type == 'zh_to_ko' %}{{ r.zh }}{% else %}{{ r.ko }}{% endif %}
+                </span>
+            </div>
+            <div class="result-row">
+                <span class="result-label">내 답</span>
+                <span class="result-value {% if not r.correct %}result-value--wrong{% endif %}">
+                    {{ r.user_ans if r.user_ans else '(미입력)' }}
+                </span>
+            </div>
+            <div class="result-row">
+                <span class="result-label">정답</span>
+                <span class="result-value result-value--answer">
+                    {% if r.type == 'zh_to_ko' %}{{ r.ko }}{% else %}{{ r.zh }}{% endif %}
+                </span>
+            </div>
+            {% if r.pinyin %}
+            <div class="result-row">
+                <span class="result-label">병음</span>
+                <span class="result-value result-value--pinyin">{{ r.pinyin }}</span>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+<!-- 하단 버튼 -->
+<div style="display:flex;gap:var(--space-md);margin-top:var(--space-xl);flex-wrap:wrap;">
+    <a href="{{ url_for('quiz.setup') }}" class="btn btn--primary" style="flex:1;">다시 시험보기</a>
+    <a href="{{ url_for('vocab.index') }}" class="btn btn--outline" style="flex:1;">내 단어장으로</a>
+</div>
+{% endblock %}

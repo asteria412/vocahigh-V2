@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}어순연습 설정 — voca海{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2 class="page-title">어순 배열 연습</h2>
+</div>
+<p class="page-desc">단어장을 선택하면 단어를 골라 AI가 문장을 만들어줍니다.</p>
+
+{% if not list_info %}
+    <div class="empty-state">
+        <span style="font-size:2.5rem;">📂</span>
+        <p>아직 단어장이 없어요.</p>
+        <a href="{{ url_for('vocab.upload') }}" class="btn btn--primary">단어장 업로드하기</a>
+    </div>
+{% else %}
+<form method="POST" action="{{ url_for('wordorder.words') }}" id="setup-form">
+    <div class="form-group">
+        <label class="form-label">
+            단어장 선택
+            <span class="form-hint">최대 {{ max_lists }}개</span>
+        </label>
+        <div class="quiz-list-grid">
+            {% for item in list_info %}
+            <label class="quiz-list-card" for="list_{{ item.id }}">
+                <input type="checkbox" id="list_{{ item.id }}" name="list_ids"
+                       value="{{ item.id }}" class="quiz-list-checkbox">
+                <div class="quiz-list-info">
+                    <span class="quiz-list-name">{{ item.name }}</span>
+                    <span class="quiz-list-count">{{ item.count }}개</span>
+                </div>
+            </label>
+            {% endfor %}
+        </div>
+        <p id="select-warning" class="form-hint"
+           style="color:var(--color-danger);display:none;margin-top:6px;">
+            최대 {{ max_lists }}개까지만 선택할 수 있어요.
+        </p>
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--full">단어 선택하기</button>
+</form>
+{% endif %}
+
+<p style="margin-top:var(--space-lg);text-align:center;font-size:0.9rem;">
+    <a href="{{ url_for('vocab.index') }}">← 내 단어장으로</a>
+</p>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    const checkboxes = document.querySelectorAll('.quiz-list-checkbox');
+    const warning    = document.getElementById('select-warning');
+    const MAX        = {{ max_lists }};
+
+    function updateUI() {
+        const checked = [...checkboxes].filter(cb => cb.checked).length;
+        checkboxes.forEach(cb => {
+            cb.disabled = !cb.checked && checked >= MAX;
+        });
+        warning.style.display = checked >= MAX ? 'block' : 'none';
+    }
+    checkboxes.forEach(cb => cb.addEventListener('change', updateUI));
+</script>
+{% endblock %}

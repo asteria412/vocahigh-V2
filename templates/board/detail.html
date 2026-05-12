@@ -1,11 +1,81 @@
 {% extends 'base.html' %}
-{% block title %}게시글 — voca海{% endblock %}
+{% block title %}{{ post.title }} — voca海{% endblock %}
 
 {% block content %}
-<div class="board">
-    <h2 class="board__title">게시글 상세</h2>
-    <!-- Day 15~16에 실제 내용 구현 예정 -->
-    <p>게시글 내용이 여기 들어와요.</p>
-    <a href="{{ url_for('board.list') }}">← 목록으로</a>
+
+<!-- 상단 네비 -->
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-lg);">
+    <a href="{{ url_for('board.list') }}" class="btn--back">← 목록</a>
+    {% if post.user_id == current_user.id or current_user.is_admin %}
+    <form method="POST" action="{{ url_for('board.delete', post_id=post.id) }}"
+          onsubmit="return confirm('게시글을 삭제할까요?')">
+        <button type="submit" class="btn btn--danger-ghost">삭제</button>
+    </form>
+    {% endif %}
 </div>
+
+<!-- 게시글 본문 -->
+<div class="post-detail">
+    <div class="post-detail__header">
+        <span class="post-badge {% if post.is_answered %}post-badge--answered{% else %}post-badge--waiting{% endif %}">
+            {{ '답변 완료' if post.is_answered else '답변 대기' }}
+        </span>
+        <h2 class="post-detail__title">{{ post.title }}</h2>
+        <div class="post-detail__meta">
+            <span>{{ post.author.nickname }}</span>
+            <span>{{ post.created_at.strftime('%Y.%m.%d %H:%M') }}</span>
+        </div>
+    </div>
+    <div class="post-detail__body">{{ post.content }}</div>
+</div>
+
+<!-- 답변 목록 -->
+{% if replies %}
+<div class="reply-section">
+    <h3 class="reply-section__title">답변 {{ replies|length }}개</h3>
+    {% for reply in replies %}
+    <div class="reply-item">
+        <div class="reply-item__header">
+            <span class="reply-badge">관리자 답변</span>
+            <span class="reply-item__date">{{ reply.created_at.strftime('%Y.%m.%d %H:%M') }}</span>
+            {% if current_user.is_admin %}
+            <form method="POST"
+                  action="{{ url_for('board.delete_reply', post_id=post.id, reply_id=reply.id) }}"
+                  style="display:inline;"
+                  onsubmit="return confirm('답변을 삭제할까요?')">
+                <button type="submit" class="btn btn--danger-ghost btn--xs">답변 삭제</button>
+            </form>
+            {% endif %}
+        </div>
+        <div class="reply-item__body">{{ reply.content }}</div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="reply-section reply-section--empty">
+    <p>아직 답변이 없어요. 조금만 기다려주세요!</p>
+</div>
+{% endif %}
+
+<!-- 어드민 답변 입력창 -->
+{% if current_user.is_admin %}
+<div class="reply-form">
+    <h3 class="reply-form__title">답변 달기</h3>
+    <form method="POST" action="{{ url_for('board.detail', post_id=post.id) }}">
+        <div class="form-group">
+            <textarea
+                class="form-input form-textarea"
+                name="reply_content"
+                placeholder="답변을 입력해주세요."
+                rows="5"
+                required
+            ></textarea>
+        </div>
+        <div style="display:flex; justify-content:flex-end; margin-top:var(--space-sm);">
+            <button type="submit" class="btn btn--primary">답변 등록</button>
+        </div>
+    </form>
+</div>
+{% endif %}
+
 {% endblock %}

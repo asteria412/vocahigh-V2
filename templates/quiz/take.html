@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}단어시험 — voca海{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2 class="page-title">단어시험</h2>
+    <span class="page-desc" style="margin:0;">총 {{ total }}문제</span>
+</div>
+<p class="page-desc">답을 모두 입력하고 제출해주세요. 데이터가 이상한 문제는 "문제 제외"를 체크하면 점수 계산에서 빠집니다.</p>
+
+<form method="POST" action="{{ url_for('quiz.submit') }}">
+
+    {% for q in questions %}
+    <div class="quiz-card">
+        <div class="quiz-card__header">
+            <span class="quiz-card__num">{{ loop.index }}</span>
+            <label class="quiz-exclude-label">
+                <input type="checkbox" name="exclude_{{ loop.index0 }}" class="quiz-exclude-cb">
+                문제 제외
+            </label>
+        </div>
+
+        <div class="quiz-card__question">
+            {% if q.type == 'zh_to_ko' %}
+                <p class="quiz-prompt">다음 한자의 뜻을 적으세요</p>
+                <p class="quiz-word quiz-word--zh">{{ q.zh }}
+                    {% if q.pos %}<span class="quiz-pos">{{ q.pos }}</span>{% endif %}
+                </p>
+                <input class="form-input" type="text" name="ans_{{ loop.index0 }}"
+                       placeholder="한국어 뜻" autocomplete="off" autocorrect="off"
+                       spellcheck="false">
+            {% else %}
+                <p class="quiz-prompt">다음 뜻에 맞는 한자를 적으세요</p>
+                <p class="quiz-word quiz-word--ko">{{ q.ko }}
+                    {% if q.pos %}<span class="quiz-pos">{{ q.pos }}</span>{% endif %}
+                </p>
+                <input class="form-input" type="text" name="ans_{{ loop.index0 }}"
+                       placeholder="한자" autocomplete="off" autocorrect="off"
+                       spellcheck="false" inputmode="text">
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+
+    <button type="submit" class="btn btn--primary btn--full" style="margin-top:var(--space-lg);">
+        제출하고 채점하기
+    </button>
+</form>
+
+<p style="margin-top:var(--space-lg);text-align:center;font-size:0.9rem;">
+    <a href="{{ url_for('quiz.setup') }}">← 처음부터 다시 선택</a>
+</p>
+{% endblock %}

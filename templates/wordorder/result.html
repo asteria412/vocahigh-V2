@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}어순 결과 — voca海{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2 class="page-title">결과</h2>
+</div>
+
+{% if is_correct %}
+<div class="score-card" style="background:var(--color-success);">
+    <div class="score-card__label">결과</div>
+    <div class="score-card__value" style="font-size:2.5rem;">정답!</div>
+    <div class="score-card__detail">100점 저장됐어요</div>
+</div>
+{% else %}
+<div class="score-card" style="background:var(--color-danger);">
+    <div class="score-card__label">결과</div>
+    <div class="score-card__value" style="font-size:2.5rem;">오답</div>
+    <div class="score-card__detail">다시 도전해보세요</div>
+</div>
+{% endif %}
+
+<div class="result-card" style="border-left-color:var(--color-border);margin-top:var(--space-lg);">
+    <div class="result-card__body">
+        <div class="result-row">
+            <span class="result-label">내 답</span>
+            <span class="result-value {% if not is_correct %}result-value--wrong{% endif %}">
+                {{ user_sentence if user_sentence else '(미입력)' }}
+            </span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">정답</span>
+            <span class="result-value result-value--answer">{{ puzzle.chinese }}</span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">병음</span>
+            <span class="result-value result-value--pinyin">{{ puzzle.pinyin }}</span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">해석</span>
+            <span class="result-value">{{ puzzle.korean }}</span>
+        </div>
+        {% if puzzle.grammar_point %}
+        <div class="result-row">
+            <span class="result-label">문법</span>
+            <span class="result-value result-value--pinyin">{{ puzzle.grammar_point }}</span>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div style="display:flex;gap:var(--space-md);margin-top:var(--space-xl);flex-wrap:wrap;">
+    {% if not is_correct %}
+    <a href="{{ url_for('wordorder.play') }}" class="btn btn--primary" style="flex:1;">다시 도전</a>
+    {% endif %}
+    <a href="{{ url_for('wordorder.setup') }}" class="btn btn--outline" style="flex:1;">새 문장 만들기</a>
+</div>
+{% endblock %}

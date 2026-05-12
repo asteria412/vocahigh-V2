@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% block title %}대시보드 — voca海{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2 class="page-title">학습 대시보드</h2>
+</div>
+<p class="page-desc">나의 학습 기록과 성장 추이를 한눈에 확인하세요.</p>
+
+{% if not has_data %}
+<div class="empty-state">
+    <span style="font-size:2.5rem;">📊</span>
+    <p>아직 학습 기록이 없어요.</p>
+    <p style="font-size:0.85rem;">단어시험, 어순연습, 작문을 완료하면 여기에 기록됩니다.</p>
+    <a href="{{ url_for('quiz.setup') }}" class="btn btn--primary">단어시험 시작하기</a>
+</div>
+
+{% else %}
+
+<!-- 핵심 지표 -->
+<div class="dash-metrics">
+    <div class="dash-metric">
+        <p class="dash-metric__label">총 학습 횟수</p>
+        <p class="dash-metric__value">{{ metrics.total }}<span class="dash-metric__unit">회</span></p>
+    </div>
+    <div class="dash-metric">
+        <p class="dash-metric__label">전체 평균</p>
+        <p class="dash-metric__value">{{ metrics.avg }}<span class="dash-metric__unit">점</span></p>
+    </div>
+    <div class="dash-metric">
+        <p class="dash-metric__label">최고 점수</p>
+        <p class="dash-metric__value">{{ metrics.best | int }}<span class="dash-metric__unit">점</span></p>
+    </div>
+    <div class="dash-metric">
+        <p class="dash-metric__label">최근 과목</p>
+        <p class="dash-metric__value dash-metric__value--sm">{{ metrics.last_type }}</p>
+    </div>
+</div>
+
+<!-- 꺾은선 차트: 성적 추세 -->
+<div class="dash-chart-card">
+    <p class="dash-chart-title">성적 변화 추이</p>
+    <canvas id="lineChart" height="220"></canvas>
+</div>
+
+<!-- 막대 차트: 유형별 평균 -->
+<div class="dash-chart-card">
+    <p class="dash-chart-title">유형별 평균 점수</p>
+    <canvas id="barChart" height="180"></canvas>
+</div>
+
+<!-- 최근 기록 테이블 -->
+<div class="dash-chart-card">
+    <p class="dash-chart-title">최근 학습 기록</p>
+    <div class="word-table-wrap">
+        <table class="word-table">
+            <thead>
+                <tr>
+                    <th>날짜</th>
+                    <th>과목</th>
+                    <th>점수</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in recent %}
+                <tr>
+                    <td style="font-size:0.85rem;color:var(--color-text-muted);">{{ r.date }}</td>
+                    <td>{{ r.quiz_type }}</td>
+                    <td>
+                        <span class="dash-score-badge
+                            {% if r.score >= 80 %}dash-score-badge--pass
+                            {% elif r.score >= 60 %}dash-score-badge--mid
+                            {% else %}dash-score-badge--fail{% endif %}">
+                            {{ r.score }}점
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+{% if has_data %}
+<script>
+const LINE_DATA = {{ line_chart | safe }};
+const BAR_DATA  = {{ bar_chart | safe }};
+
+// 꺾은선 차트
+new Chart(document.getElementById('lineChart'), {
+    type: 'line',
+    data: { datasets: LINE_DATA },
+    options: {
+        responsive: true,
+        parsing: { xAxisKey: 'x', yAxisKey: 'y' },
+        scales: {
+            x: { ticks: { maxTicksLimit: 8, font: { size: 11 } } },
+            y: { min: 0, max: 100, ticks: { stepSize: 20 } }
+        },
+        plugins: {
+            legend: { position: 'bottom', labels: { font: { size: 12 } } }
+        }
+    }
+});
+
+// 막대 차트
+new Chart(document.getElementById('barChart'), {
+    type: 'bar',
+    data: {
+        labels: BAR_DATA.labels,
+        datasets: [{
+            label: '평균 점수',
+            data: BAR_DATA.data,
+            backgroundColor: BAR_DATA.colors.map(c => c + 'CC'),
+            borderColor: BAR_DATA.colors,
+            borderWidth: 2,
+            borderRadius: 6,
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: { min: 0, max: 100, ticks: { stepSize: 20 } }
+        },
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: ctx => ` ${ctx.parsed.y}점`
+                }
+            }
+        }
+    }
+});
+</script>
+{% endif %}
+{% endblock %}

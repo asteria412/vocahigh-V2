@@ -230,6 +230,9 @@ $RECYCLE.BIN/
 # Claude Code 메모리 (로컬 전용)
 .claude/
 
+# 업로드 파싱 임시 파일
+tmp_vocab/
+
 # V1 전용 파일 (V2에서 사용 안 함)
 features/
 ui/
