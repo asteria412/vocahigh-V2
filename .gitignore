@@ -230,12 +230,13 @@ $RECYCLE.BIN/
 # Claude Code 메모리 (로컬 전용)
 .claude/
 
-# V1 파일 (vocahigh_v1/ 폴더에 별도 보관)
-core/
+# V1 전용 파일 (V2에서 사용 안 함)
 features/
-services/
 ui/
 app.py
 .streamlit/
 vocahigh_icon_no_bg.png
 플로우차트.png
+
+# V1 서비스 중 MySQL로 대체된 파일
+services/google_sheets.py
