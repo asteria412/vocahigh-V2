@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}{{ vocab_list.name }} — voca海{% endblock %}
+
+{% block content %}
+<div class="page">
+    <div class="page-header">
+        <h2 class="page-title">{{ vocab_list.name }}</h2>
+        <span class="form-hint">{{ words|length }}개 단어</span>
+    </div>
+
+    <div class="word-table-wrap">
+        <table class="word-table">
+            <thead>
+                <tr>
+                    <th>한자</th>
+                    <th>병음</th>
+                    <th>의미</th>
+                    <th>품사</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for word in words %}
+                <tr>
+                    <td lang="zh-CN">{{ word.zh }}</td>
+                    <td>{{ word.pinyin }}</td>
+                    <td>{{ word.ko }}</td>
+                    <td>{{ word.pos }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div style="margin-top:1.5rem; display:flex; gap:1rem; flex-wrap:wrap;">
+        <a href="{{ url_for('vocab.index') }}" class="btn btn--outline">← 목록으로</a>
+    </div>
+</div>
+{% endblock %}

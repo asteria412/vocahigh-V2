@@ -36,6 +36,7 @@
             {% if current_user.is_authenticated %}
                 <!-- 로그인 상태 -->
                 <span class="nav-nickname">{{ current_user.nickname }}</span>
+                <a href="{{ url_for('vocab.index') }}" class="nav-link">단어장</a>
                 <a href="{{ url_for('board.list') }}" class="nav-link">게시판</a>
                 <a href="{{ url_for('auth.logout') }}" class="nav-link">로그아웃</a>
             {% else %}

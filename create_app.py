@@ -8,7 +8,7 @@
 from flask import Flask
 from config import config
 from extensions import db, login_manager
-from models import User  # DB 테이블 생성을 위해 모델 임포트 필요
+from models import User, VocabList, VocabWord, Score  # DB 테이블 생성을 위해 모델 임포트 필요
 
 
 def create_app(config_name='default'):
@@ -38,11 +38,13 @@ def create_app(config_name='default'):
     from blueprints.main import main_bp
     from blueprints.auth import auth_bp
     from blueprints.board import board_bp
+    from blueprints.vocab import vocab_bp
 
     # url_prefix: 각 Blueprint의 URL 앞에 붙는 경로
-    app.register_blueprint(main_bp)                      # /
-    app.register_blueprint(auth_bp, url_prefix='/auth')  # /auth/login, /auth/register
-    app.register_blueprint(board_bp, url_prefix='/board') # /board/
+    app.register_blueprint(main_bp)                        # /
+    app.register_blueprint(auth_bp, url_prefix='/auth')    # /auth/login, /auth/register
+    app.register_blueprint(board_bp, url_prefix='/board')  # /board/
+    app.register_blueprint(vocab_bp, url_prefix='/vocab')  # /vocab/
 
     # -------------------------------------------------------------------
     # 에러 핸들러 등록

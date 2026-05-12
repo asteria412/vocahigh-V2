@@ -365,6 +365,170 @@ a:hover {
 }
 
 /* -------------------------------------------------------------------
+   페이지 공통 레이아웃
+   ------------------------------------------------------------------- */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-md);
+    border-bottom: 2px solid var(--color-border);
+}
+
+.page-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.page-desc {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    margin-bottom: var(--space-lg);
+}
+
+/* -------------------------------------------------------------------
+   카드 목록 (단어장 목록 등)
+   ------------------------------------------------------------------- */
+.card-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card__link {
+    text-decoration: none;
+    color: inherit;
+    flex: 1;
+}
+
+.card__title {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 4px;
+}
+
+.card__meta {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+}
+
+/* -------------------------------------------------------------------
+   빈 상태
+   ------------------------------------------------------------------- */
+.empty-state {
+    text-align: center;
+    padding: var(--space-xl);
+    color: var(--color-text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+/* -------------------------------------------------------------------
+   파일 업로드 드롭존
+   ------------------------------------------------------------------- */
+.file-drop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    border: 2px dashed var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-xl);
+    cursor: pointer;
+    transition: border-color 0.2s;
+    text-align: center;
+}
+
+.file-drop:hover {
+    border-color: var(--color-primary);
+}
+
+.file-drop__icon { font-size: 2rem; }
+.file-drop__text { font-weight: 600; font-size: 0.95rem; }
+.file-drop__hint { font-size: 0.8rem; color: var(--color-text-muted); }
+.file-drop__input { display: none; }
+
+/* -------------------------------------------------------------------
+   단어 테이블
+   ------------------------------------------------------------------- */
+.word-table-wrap {
+    overflow-x: auto;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+}
+
+.word-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.word-table th {
+    background: var(--color-bg);
+    padding: var(--space-sm) var(--space-md);
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid var(--color-border);
+    white-space: nowrap;
+}
+
+.word-table td {
+    padding: var(--space-sm) var(--space-md);
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: middle;
+}
+
+.word-table tr:last-child td { border-bottom: none; }
+
+.form-input--sm {
+    padding: 4px 8px;
+    font-size: 0.85rem;
+    min-height: 36px;
+    min-width: 60px;
+}
+
+/* 전체선택/개수 컨트롤 */
+.review-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-md);
+}
+
+/* 아이콘 버튼 (삭제 등) */
+.btn-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+}
+
+.btn-icon--danger {
+    color: var(--color-danger);
+}
+
+.btn-icon--danger:hover {
+    background: #FEE2E2;
+}
+
+/* -------------------------------------------------------------------
    푸터
    ------------------------------------------------------------------- */
 .footer {

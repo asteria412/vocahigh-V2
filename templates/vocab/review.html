@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}단어 검토 — voca海{% endblock %}
+
+{% block content %}
+<div class="page">
+    <h2 class="page-title">파싱 결과 검토</h2>
+    <p class="page-desc">AI가 추출한 단어예요. 수정하거나 제외할 수 있어요.</p>
+
+    <form method="POST">
+        <div class="form-group">
+            <label class="form-label" for="list_name">단어장 이름</label>
+            <input class="form-input" type="text" id="list_name" name="list_name"
+                   value="{{ list_name }}">
+        </div>
+
+        <!-- 전체 선택/해제 -->
+        <div class="review-controls">
+            <label class="agree-label">
+                <input type="checkbox" id="select-all" class="agree-checkbox" checked>
+                <span>전체 선택</span>
+            </label>
+            <span class="form-hint">총 {{ words|length }}개</span>
+        </div>
+
+        <!-- 단어 목록 -->
+        <div class="word-table-wrap">
+            <table class="word-table">
+                <thead>
+                    <tr>
+                        <th>포함</th>
+                        <th>한자</th>
+                        <th>병음</th>
+                        <th>의미</th>
+                        <th>품사</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for word in words %}
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="selected" value="{{ loop.index0 }}"
+                                   class="agree-checkbox word-check" checked>
+                        </td>
+                        <td>
+                            <input class="form-input form-input--sm" type="text"
+                                   name="zh_{{ loop.index0 }}"
+                                   value="{{ word.get('zh', '') }}"
+                                   lang="zh-CN" inputmode="text">
+                        </td>
+                        <td>
+                            <input class="form-input form-input--sm" type="text"
+                                   name="pinyin_{{ loop.index0 }}"
+                                   value="{{ word.get('pinyin', '') }}">
+                        </td>
+                        <td>
+                            <input class="form-input form-input--sm" type="text"
+                                   name="ko_{{ loop.index0 }}"
+                                   value="{{ word.get('ko', '') }}">
+                        </td>
+                        <td>
+                            <input class="form-input form-input--sm" type="text"
+                                   name="pos_{{ loop.index0 }}"
+                                   value="{{ word.get('pos', '') }}">
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 1.5rem; display:flex; gap:1rem;">
+            <button type="submit" class="btn btn--primary btn--full">저장하기</button>
+            <a href="{{ url_for('vocab.upload') }}" class="btn btn--outline btn--full">다시 업로드</a>
+        </div>
+    </form>
+</div>
+
+{% block extra_scripts %}
+<script>
+    // 전체 선택/해제
+    document.getElementById('select-all').addEventListener('change', function() {
+        document.querySelectorAll('.word-check').forEach(cb => cb.checked = this.checked);
+    });
+</script>
+{% endblock %}
+{% endblock %}

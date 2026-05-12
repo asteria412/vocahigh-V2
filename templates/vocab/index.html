@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}내 단어장 — voca海{% endblock %}
+
+{% block content %}
+<div class="page">
+    <div class="page-header">
+        <h2 class="page-title">내 단어장</h2>
+        <a href="{{ url_for('vocab.upload') }}" class="btn btn--primary">+ 업로드</a>
+    </div>
+
+    {% if vocab_lists %}
+        <ul class="card-list">
+            {% for vl in vocab_lists %}
+            <li class="card">
+                <a href="{{ url_for('vocab.detail', list_id=vl.id) }}" class="card__link">
+                    <div class="card__title">{{ vl.name }}</div>
+                    <div class="card__meta">
+                        단어 {{ vl.words.count() }}개 &nbsp;·&nbsp;
+                        {{ vl.created_at.strftime('%Y.%m.%d') }}
+                    </div>
+                </a>
+                <form method="POST" action="{{ url_for('vocab.delete', list_id=vl.id) }}"
+                      onsubmit="return confirm('정말 삭제할까요?')">
+                    <button type="submit" class="btn-icon btn-icon--danger">삭제</button>
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="empty-state">
+            <p>아직 단어장이 없어요.</p>
+            <a href="{{ url_for('vocab.upload') }}" class="btn btn--outline">첫 단어장 올리기</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
