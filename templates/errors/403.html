@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}접근 권한 없음 — voca海{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h2>🚫 접근 권한이 없어요</h2>
+    <p style="color: var(--color-text-muted); margin-top: 1rem;">관리자만 접근할 수 있는 페이지예요.</p>
+    <a href="{{ url_for('main.home') }}" class="btn btn--outline" style="margin-top: 2rem;">홈으로 돌아가기</a>
+</div>
+{% endblock %}

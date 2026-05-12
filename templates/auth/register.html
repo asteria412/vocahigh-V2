@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block title %}회원가입 — voca海{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <h2 class="form-page__title">회원가입</h2>
+
+    <form method="POST" action="{{ url_for('auth.register') }}" novalidate>
+
+        <!-- 이름 -->
+        <div class="form-group">
+            <label class="form-label" for="name">이름</label>
+            <input
+                class="form-input"
+                type="text"
+                id="name"
+                name="name"
+                placeholder="홍길동"
+                value="{{ form_data.get('name', '') }}"
+                autocomplete="name"
+                required
+            >
+        </div>
+
+        <!-- 별명 -->
+        <div class="form-group">
+            <label class="form-label" for="nickname">
+                별명
+                <span class="form-hint">학습 기록에 표시되는 이름이에요</span>
+            </label>
+            <input
+                class="form-input"
+                type="text"
+                id="nickname"
+                name="nickname"
+                placeholder="예: 고래학생"
+                value="{{ form_data.get('nickname', '') }}"
+                autocomplete="nickname"
+                required
+            >
+        </div>
+
+        <!-- 이메일 -->
+        <div class="form-group">
+            <label class="form-label" for="email">이메일</label>
+            <input
+                class="form-input"
+                type="email"
+                id="email"
+                name="email"
+                placeholder="example@email.com"
+                value="{{ form_data.get('email', '') }}"
+                autocomplete="email"
+                inputmode="email"
+                required
+            >
+        </div>
+
+        <!-- 비밀번호 -->
+        <div class="form-group">
+            <label class="form-label" for="password">
+                비밀번호
+                <span class="form-hint">6자 이상</span>
+            </label>
+            <input
+                class="form-input"
+                type="password"
+                id="password"
+                name="password"
+                placeholder="비밀번호 입력"
+                autocomplete="new-password"
+                required
+            >
+        </div>
+
+        <!-- 비밀번호 확인 -->
+        <div class="form-group">
+            <label class="form-label" for="password_confirm">비밀번호 확인</label>
+            <input
+                class="form-input"
+                type="password"
+                id="password_confirm"
+                name="password_confirm"
+                placeholder="비밀번호 다시 입력"
+                autocomplete="new-password"
+                required
+            >
+        </div>
+
+        <!-- 개인정보 수집 동의 -->
+        <div class="form-group form-agree">
+            <label class="agree-label">
+                <input
+                    type="checkbox"
+                    name="privacy_agree"
+                    id="privacy_agree"
+                    class="agree-checkbox"
+                    required
+                >
+                <span>
+                    서비스 이용을 위한 개인정보 수집에 동의합니다.
+                    <span class="agree-required">(필수)</span>
+                </span>
+            </label>
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--full">가입하기</button>
+    </form>
+
+    <p class="form-page__footer">
+        이미 계정이 있어요?
+        <a href="{{ url_for('auth.login') }}">로그인</a>
+    </p>
+</div>
+{% endblock %}

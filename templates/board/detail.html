@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}게시글 — voca海{% endblock %}
+
+{% block content %}
+<div class="board">
+    <h2 class="board__title">게시글 상세</h2>
+    <!-- Day 15~16에 실제 내용 구현 예정 -->
+    <p>게시글 내용이 여기 들어와요.</p>
+    <a href="{{ url_for('board.list') }}">← 목록으로</a>
+</div>
+{% endblock %}

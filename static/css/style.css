@@ -1,0 +1,400 @@
+/* =====================================================================
+   style.css - voca海 V2 공통 스타일
+   =====================================================================
+   CSS Variables로 색상/폰트를 한 곳에서 관리해.
+   나중에 테마 바꾸려면 :root 안의 변수 값만 수정하면 돼.
+   ===================================================================== */
+
+/* -------------------------------------------------------------------
+   CSS 변수 (테마 설정)
+   ------------------------------------------------------------------- */
+:root {
+    /* 메인 색상 */
+    --color-primary: #4A90D9;       /* 파랑 - 브랜드 메인 */
+    --color-primary-dark: #2C6BAD;  /* 진한 파랑 - 호버 */
+    --color-accent: #F5A623;        /* 주황 - 강조 */
+
+    /* 배경/텍스트 */
+    --color-bg: #F8F9FA;
+    --color-surface: #FFFFFF;
+    --color-text: #212529;
+    --color-text-muted: #6C757D;
+    --color-border: #DEE2E6;
+
+    /* 상태 색상 */
+    --color-success: #28A745;
+    --color-warning: #FFC107;
+    --color-danger: #DC3545;
+    --color-info: #17A2B8;
+
+    /* 폰트 */
+    --font-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-size-base: 16px;
+
+    /* 간격 */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 40px;
+
+    /* 반응형 최대 너비 */
+    --max-width: 768px;
+
+    /* 모서리 둥글기 */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 16px;
+}
+
+/* -------------------------------------------------------------------
+   기본 리셋 & 전역 설정
+   ------------------------------------------------------------------- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-base);
+    font-size: var(--font-size-base);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    /* 모바일에서 텍스트 자동 확대 방지 */
+    -webkit-text-size-adjust: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--color-primary-dark);
+    text-decoration: underline;
+}
+
+/* -------------------------------------------------------------------
+   네비게이션 바
+   ------------------------------------------------------------------- */
+.navbar {
+    background-color: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    padding: var(--space-md) var(--space-lg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* 스크롤해도 상단에 고정 */
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-brand {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.nav-link {
+    color: var(--color-text);
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.nav-link--primary {
+    background-color: var(--color-primary);
+    color: white;
+    padding: var(--space-xs) var(--space-md);
+    border-radius: var(--radius-sm);
+}
+
+.nav-nickname {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+}
+
+/* -------------------------------------------------------------------
+   플래시 메시지
+   ------------------------------------------------------------------- */
+.flash-container {
+    max-width: var(--max-width);
+    margin: var(--space-md) auto 0;
+    padding: 0 var(--space-md);
+    width: 100%;
+}
+
+.flash {
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-sm);
+    font-size: 0.9rem;
+}
+
+.flash--success { background-color: #D4EDDA; color: #155724; }
+.flash--danger  { background-color: #F8D7DA; color: #721C24; }
+.flash--warning { background-color: #FFF3CD; color: #856404; }
+.flash--info    { background-color: #D1ECF1; color: #0C5460; }
+
+/* -------------------------------------------------------------------
+   메인 콘텐츠
+   ------------------------------------------------------------------- */
+.main-content {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: var(--space-xl) var(--space-md);
+    width: 100%;
+    flex: 1;
+}
+
+/* -------------------------------------------------------------------
+   홈 히어로 섹션
+   ------------------------------------------------------------------- */
+.hero {
+    text-align: center;
+    padding: var(--space-xl) 0;
+}
+
+.hero__title {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--color-primary);
+    margin-bottom: var(--space-md);
+}
+
+.hero__accent {
+    color: var(--color-accent);
+}
+
+.hero__subtitle {
+    font-size: 1.1rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-xl);
+    line-height: 1.6;
+}
+
+.hero__welcome {
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-lg);
+}
+
+.hero__actions {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* -------------------------------------------------------------------
+   버튼
+   ------------------------------------------------------------------- */
+.btn {
+    display: inline-block;
+    padding: var(--space-md) var(--space-xl);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 2px solid transparent;
+    text-decoration: none;
+    transition: all 0.2s;
+    /* 모바일에서 탭 영역 충분히 크게 */
+    min-height: 48px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn--primary {
+    background-color: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+}
+
+.btn--primary:hover {
+    background-color: var(--color-primary-dark);
+    border-color: var(--color-primary-dark);
+    color: white;
+    text-decoration: none;
+}
+
+.btn--outline {
+    background-color: transparent;
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.btn--outline:hover {
+    background-color: var(--color-primary);
+    color: white;
+    text-decoration: none;
+}
+
+/* -------------------------------------------------------------------
+   폼 페이지 (로그인, 회원가입)
+   ------------------------------------------------------------------- */
+.form-page {
+    max-width: 400px;
+    margin: 0 auto;
+    background-color: var(--color-surface);
+    padding: var(--space-xl);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.form-page__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: var(--space-xl);
+    text-align: center;
+}
+
+/* -------------------------------------------------------------------
+   폼 입력 요소
+   ------------------------------------------------------------------- */
+.form-group {
+    margin-bottom: var(--space-lg);
+}
+
+.form-label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: var(--space-xs);
+}
+
+.form-hint {
+    font-weight: 400;
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+    margin-left: var(--space-xs);
+}
+
+.form-input {
+    width: 100%;
+    padding: var(--space-md);
+    font-size: 1rem;
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    /* 모바일에서 탭 영역 확보 */
+    min-height: 48px;
+    transition: border-color 0.2s;
+    /* iOS에서 기본 스타일 제거 */
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.15);
+}
+
+.form-input::placeholder {
+    color: var(--color-text-muted);
+}
+
+.form-page__footer {
+    text-align: center;
+    margin-top: var(--space-xl);
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+}
+
+/* 개인정보 동의 체크박스 */
+.form-agree {
+    margin-bottom: var(--space-lg);
+}
+
+.agree-label {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--color-text);
+    line-height: 1.5;
+}
+
+.agree-checkbox {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    margin-top: 2px;
+    accent-color: var(--color-primary);
+    cursor: pointer;
+}
+
+.agree-required {
+    color: var(--color-danger);
+    font-size: 0.8rem;
+    margin-left: 2px;
+}
+
+/* 전체 너비 버튼 */
+.btn--full {
+    width: 100%;
+    margin-top: var(--space-sm);
+}
+
+/* -------------------------------------------------------------------
+   게시판
+   ------------------------------------------------------------------- */
+.board__title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-md);
+    border-bottom: 2px solid var(--color-border);
+}
+
+/* -------------------------------------------------------------------
+   푸터
+   ------------------------------------------------------------------- */
+.footer {
+    background-color: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    padding: var(--space-lg);
+    text-align: center;
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+}
+
+/* -------------------------------------------------------------------
+   모바일 반응형 (기본이 모바일, 넓은 화면 대응)
+   ------------------------------------------------------------------- */
+@media (max-width: 480px) {
+    .navbar {
+        padding: var(--space-sm) var(--space-md);
+    }
+
+    .nav-brand {
+        font-size: 1.2rem;
+    }
+
+    .hero__title {
+        font-size: 2.2rem;
+    }
+
+    .form-page {
+        padding: var(--space-lg);
+        border-radius: 0;
+        box-shadow: none;
+    }
+}

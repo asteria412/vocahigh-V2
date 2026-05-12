@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<!--
+  base.html - 모든 페이지의 공통 레이아웃
+  다른 HTML 파일들은 이 파일을 "상속"해서 씀.
+  {% block 이름 %}{% endblock %} 부분을 자식 파일에서 채워넣어.
+-->
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <!-- 모바일 화면 너비에 맞게 자동 조정 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- PWA: 홈 화면에 추가했을 때 앱처럼 동작 -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#4A90D9">
+
+    <title>{% block title %}voca海{% endblock %}</title>
+
+    <!-- PWA 매니페스트 -->
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+
+    <!-- 공통 CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <!-- ================================================================
+         상단 네비게이션 바
+    ================================================================ -->
+    <nav class="navbar">
+        <a href="{{ url_for('main.home') }}" class="nav-brand">voca海</a>
+
+        <div class="nav-links">
+            {% if current_user.is_authenticated %}
+                <!-- 로그인 상태 -->
+                <span class="nav-nickname">{{ current_user.nickname }}</span>
+                <a href="{{ url_for('board.list') }}" class="nav-link">게시판</a>
+                <a href="{{ url_for('auth.logout') }}" class="nav-link">로그아웃</a>
+            {% else %}
+                <!-- 비로그인 상태 -->
+                <a href="{{ url_for('auth.login') }}" class="nav-link">로그인</a>
+                <a href="{{ url_for('auth.register') }}" class="nav-link nav-link--primary">회원가입</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- ================================================================
+         플래시 메시지 (성공/실패 알림)
+         flash('메시지', '카테고리') 로 Python에서 보낸 알림이 여기 표시돼.
+    ================================================================ -->
+    <div class="flash-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash flash--{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- ================================================================
+         메인 콘텐츠 영역
+         각 페이지의 내용이 여기에 들어와.
+    ================================================================ -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- ================================================================
+         하단 푸터
+    ================================================================ -->
+    <footer class="footer">
+        <p>voca海 &copy; 2025 — HSK 수험생을 위한 AI 학습 도우미</p>
+    </footer>
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

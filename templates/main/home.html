@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}홈 — voca海{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1 class="hero__title">voca<span class="hero__accent">海</span></h1>
+    <p class="hero__subtitle">HSK 단어장을 올리면 AI가 맞춤 문제를 만들어드려요</p>
+
+    {% if current_user.is_authenticated %}
+        <p class="hero__welcome">어서 와요, <strong>{{ current_user.nickname }}</strong>님!</p>
+        <a href="{{ url_for('board.list') }}" class="btn btn--primary">학습 상담 게시판</a>
+    {% else %}
+        <div class="hero__actions">
+            <a href="{{ url_for('auth.register') }}" class="btn btn--primary">시작하기</a>
+            <a href="{{ url_for('auth.login') }}" class="btn btn--outline">로그인</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
