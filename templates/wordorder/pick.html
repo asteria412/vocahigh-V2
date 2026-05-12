@@ -5,8 +5,10 @@
 <div class="page-header">
     <h2 class="page-title">단어 선택</h2>
 </div>
-<p class="page-desc">문장에 넣을 단어를 1~{{ max_words }}개 선택하세요.<br>
-<span class="form-hint">선택 후 화면 하단의 'AI 문장 만들기' 버튼을 눌러주세요.</span></p>
+<p style="text-align:center; font-size:1rem; line-height:2; margin-bottom:var(--space-lg);">
+    문장에 넣을 단어를 1~{{ max_words }}개 선택하세요.<br>
+    <span style="font-size:0.88rem; color:var(--color-text-muted);">선택 후 화면 하단의 'AI 문장 만들기' 버튼을 눌러주세요.</span>
+</p>
 
 <form method="POST" action="{{ url_for('wordorder.generate') }}" id="pick-form">
 

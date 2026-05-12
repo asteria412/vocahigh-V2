@@ -22,9 +22,11 @@ class Config:
     # -------------------------------------------------------------------
     # 데이터베이스 설정
     # -------------------------------------------------------------------
-    # MySQL 연결 주소 형식: mysql+pymysql://유저명:비밀번호@호스트/DB이름
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'mysql+pymysql://root:1234@localhost/vocahigh'
+    # Railway는 mysql:// 형식으로 제공 → pymysql 드라이버용으로 자동 변환
+    _db_url = os.environ.get('DATABASE_URL') or 'mysql+pymysql://root:1234@localhost/vocahigh'
+    if _db_url.startswith('mysql://'):
+        _db_url = 'mysql+pymysql://' + _db_url[len('mysql://'):]
+    SQLALCHEMY_DATABASE_URI = _db_url
 
     # SQLAlchemy가 DB 변경사항을 자동으로 추적하는 기능 - 성능에 영향을 줘서 끔
     SQLALCHEMY_TRACK_MODIFICATIONS = False

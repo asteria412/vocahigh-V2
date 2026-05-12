@@ -106,6 +106,13 @@ def delete(post_id):
     if post.user_id != current_user.id and not current_user.is_admin:
         abort(403)
 
+    # 일반 유저는 답변이 달린 글 삭제 불가
+    if not current_user.is_admin and post.replies.count() > 0:
+        flash('답변 완료된 글은 삭제가 어렵습니다. 관리자에게 문의하세요.', 'danger')
+        return redirect(url_for('board.detail', post_id=post_id))
+
+    # 어드민은 답변 포함 전체 삭제 가능
+    post.replies.delete()
     db.session.delete(post)
     db.session.commit()
 

@@ -135,8 +135,24 @@ def generate():
 
     selected_zh = [w.zh for w in words]
 
-    # LLM 호출
-    puzzle = generate_sentence_puzzle(selected_zh)
+    def _pieces_valid(result):
+        """조각을 이어붙인 문장이 전체 문장과 일치하는지 검증 (구두점 제외)"""
+        chinese = result.get('chinese', '')
+        pieces  = result.get('pieces', [])
+        if not pieces or not chinese:
+            return False
+        joined = ''.join(pieces)
+        strip  = lambda s: re.sub(r'[^\w]', '', s, flags=re.UNICODE)
+        return strip(joined) == strip(chinese)
+
+    # LLM 호출 — pieces가 전체 문장을 커버할 때까지 최대 3회 재시도
+    puzzle = None
+    for _ in range(3):
+        result = generate_sentence_puzzle(selected_zh)
+        if result and _pieces_valid(result):
+            puzzle = result
+            break
+
     if not puzzle:
         flash('AI가 문장을 생성하지 못했어요. 다시 시도해주세요.', 'danger')
         return redirect(url_for('wordorder.setup'))
