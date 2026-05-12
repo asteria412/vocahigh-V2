@@ -5,6 +5,7 @@ Flask-Login
 
 # ── Database ──────────────────────────────────────────────────────
 PyMySQL
+cryptography
 
 # ── Authentication ─────────────────────────────────────────────────
 bcrypt
