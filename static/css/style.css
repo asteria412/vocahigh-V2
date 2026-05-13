@@ -1960,6 +1960,50 @@ a:hover {
 }
 
 /* -------------------------------------------------------------------
+   PWA 전용 상단 네비 (standalone 모드에서만 표시)
+   ------------------------------------------------------------------- */
+.nav-pwa {
+    display: none;
+}
+
+@media (display-mode: standalone) {
+    /* 기존 메뉴/햄버거/데스크탑 접속중 숨김 */
+    .nav-links--menu,
+    .nav-meta,
+    .nav-status--desktop {
+        display: none;
+    }
+
+    /* PWA 전용 오른쪽 영역 표시 */
+    .nav-pwa {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        margin-left: auto;
+    }
+
+    .nav-pwa .nav-status {
+        font-size: 0.82rem;
+    }
+
+    .nav-pwa__sep {
+        color: var(--color-border);
+        font-size: 1rem;
+    }
+
+    .nav-pwa__logout {
+        color: var(--color-text-muted);
+        font-size: 0.85rem;
+        text-decoration: none;
+    }
+
+    .nav-pwa__logout:hover {
+        color: var(--color-danger);
+        text-decoration: none;
+    }
+}
+
+/* -------------------------------------------------------------------
    PWA 하단 탭바 (앱으로 설치 후에만 표시)
    ------------------------------------------------------------------- */
 .bottom-nav {

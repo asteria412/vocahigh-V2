@@ -51,6 +51,12 @@
                 <span class="nav-status nav-status--mobile">🟢 {{ current_user.nickname }}님 접속중</span>
                 <button class="nav-toggle" id="navToggle" aria-label="메뉴 열기">☰</button>
             </div>
+            <!-- PWA 전용: 접속중 | 로그아웃 -->
+            <div class="nav-pwa">
+                <span class="nav-status">🟢 {{ current_user.nickname }}님 접속중</span>
+                <span class="nav-pwa__sep">|</span>
+                <a href="{{ url_for('auth.logout') }}" class="nav-pwa__logout">로그아웃</a>
+            </div>
         {% else %}
             <!-- 비로그인 상태: 로그인/회원가입 항상 노출 -->
             <div class="nav-links">
