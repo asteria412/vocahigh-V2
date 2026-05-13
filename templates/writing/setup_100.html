@@ -12,10 +12,18 @@
     그림을 그려줍니다. 그림을 보고 80자 내외로 작문하세요.
 </p>
 
-<form method="POST" action="{{ url_for('writing.gen_100') }}">
-    <button type="submit" class="btn btn--primary btn--full">문제 받기</button>
+<form method="POST" action="{{ url_for('writing.gen_100') }}" id="gen100-form">
+    <button type="submit" class="btn btn--primary btn--full" id="gen100-btn">문제 받기</button>
     <p class="form-hint" style="text-align:center;margin-top:var(--space-sm);">
         상황 생성 + 이미지 제작으로 약 20~30초 소요될 수 있어요.
     </p>
 </form>
+
+<script>
+document.getElementById('gen100-form').addEventListener('submit', function () {
+    var btn = document.getElementById('gen100-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="btn-spinner"></span>그림 생성 중…';
+});
+</script>
 {% endblock %}
