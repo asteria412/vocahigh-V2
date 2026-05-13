@@ -144,7 +144,16 @@ a:hover {
     color: var(--color-text-muted);
     font-size: 0.85rem;
     white-space: nowrap;
+}
+
+/* 데스크탑: 로고 옆 / 모바일: 숨김 */
+.nav-status--desktop {
     margin-left: var(--space-md);
+}
+
+/* 모바일 전용 (기본 숨김) */
+.nav-status--mobile {
+    display: none;
 }
 
 .nav-meta {
@@ -1889,9 +1898,18 @@ a:hover {
         display: block;
     }
 
-    /* 모바일: 햄버거 버튼을 오른쪽 끝으로 */
+    /* 모바일: nav-meta(접속중+햄버거)를 오른쪽 끝으로 */
     .nav-meta {
         margin-left: auto;
+    }
+
+    /* 모바일: 로고 옆 접속중 숨기고, nav-meta 안 접속중 표시 */
+    .nav-status--desktop {
+        display: none;
+    }
+
+    .nav-status--mobile {
+        display: inline;
     }
 
     /* 로그인 상태 메뉴: 기본 숨김 → 햄버거 클릭시 드롭다운 */
