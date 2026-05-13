@@ -1982,21 +1982,30 @@ a:hover {
     .bottom-nav__item {
         flex: 1;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: var(--space-sm) 0;
+        gap: 3px;
+        padding: 10px 4px 8px;
         text-decoration: none;
         color: var(--color-text-muted);
-        font-size: 0.78rem;
+        font-size: 0.62rem;
         font-weight: 500;
-        box-shadow: inset 0 2px 0 transparent;
         transition: color 0.15s;
+    }
+
+    .bottom-nav__item svg {
+        width: 24px;
+        height: 24px;
     }
 
     .bottom-nav__item--active {
         color: var(--color-primary);
         font-weight: 700;
-        box-shadow: inset 0 2px 0 var(--color-primary);
+    }
+
+    .bottom-nav__item--active svg {
+        stroke-width: 2.5;
     }
 
     /* 콘텐츠/푸터가 탭바에 가리지 않도록 하단 여백 추가 */
