@@ -37,6 +37,12 @@ def process_vocab_with_llm(df, raw_text, batch_size=10):
     if repair_targets.empty: return df
 
     indices_to_drop = []
+
+    # 병음·뜻 둘 다 없으면 예문 파편 → LLM 없이 즉시 드롭
+    both_missing_mask = repair_targets['flags'] == 'NO_PINYIN | NO_MEANING'
+    indices_to_drop.extend(repair_targets[both_missing_mask].index.tolist())
+    repair_targets = repair_targets[~both_missing_mask]
+
     items = list(repair_targets.iterrows())
 
     for batch_start in range(0, len(items), batch_size):
