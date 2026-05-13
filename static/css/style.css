@@ -144,20 +144,18 @@ a:hover {
     color: var(--color-text-muted);
     font-size: 0.85rem;
     white-space: nowrap;
+    margin-left: var(--space-md);
 }
 
 .nav-meta {
     display: flex;
     align-items: center;
     gap: var(--space-sm);
-    order: 1;
-    margin-left: auto;
 }
 
-/* 데스크탑: 접속중 다음에 메뉴 링크가 오도록 순서 지정 */
+/* 데스크탑: 메뉴 링크 오른쪽 정렬 */
 .nav-links--menu {
-    order: 2;
-    margin-left: var(--space-sm);
+    margin-left: auto;
 }
 
 .nav-toggle {
@@ -1889,6 +1887,11 @@ a:hover {
 @media (max-width: 768px) {
     .nav-toggle {
         display: block;
+    }
+
+    /* 모바일: 햄버거 버튼을 오른쪽 끝으로 */
+    .nav-meta {
+        margin-left: auto;
     }
 
     /* 로그인 상태 메뉴: 기본 숨김 → 햄버거 클릭시 드롭다운 */
