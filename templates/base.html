@@ -89,6 +89,15 @@
         <p>voca海 &copy; 2025 — HSK 수험생을 위한 AI 학습 도우미</p>
     </footer>
 
+    {% if current_user.is_authenticated %}
+    <nav class="bottom-nav">
+        <a href="{{ url_for('vocab.index') }}" class="bottom-nav__item {% if request.endpoint and request.endpoint.startswith('vocab') %}bottom-nav__item--active{% endif %}">단어장</a>
+        <a href="{{ url_for('quiz.setup') }}" class="bottom-nav__item {% if request.endpoint and request.endpoint.startswith('quiz') %}bottom-nav__item--active{% endif %}">단어시험</a>
+        <a href="{{ url_for('wordorder.setup') }}" class="bottom-nav__item {% if request.endpoint and request.endpoint.startswith('wordorder') %}bottom-nav__item--active{% endif %}">어순연습</a>
+        <a href="{{ url_for('writing.index') }}" class="bottom-nav__item {% if request.endpoint and request.endpoint.startswith('writing') %}bottom-nav__item--active{% endif %}">작문</a>
+    </nav>
+    {% endif %}
+
     {% block extra_scripts %}{% endblock %}
 
     <script>
@@ -98,6 +107,13 @@
             toggle.addEventListener('click', function() {
                 navLinks.classList.toggle('nav-links--open');
                 toggle.textContent = navLinks.classList.contains('nav-links--open') ? '✕' : '☰';
+            });
+        }
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                    .catch(function(err) { console.log('SW 등록 실패:', err); });
             });
         }
     </script>
