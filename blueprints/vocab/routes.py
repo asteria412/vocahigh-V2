@@ -18,7 +18,6 @@ from extensions import db
 from models.vocab_list import VocabList
 from models.vocab_word import VocabWord
 from core.vocab_parser import change_text_to_vocab_df
-from core.pdf_loader import is_text_corrupted
 from services.llm import process_vocab_with_llm
 from blueprints.vocab import vocab_bp
 
@@ -80,10 +79,7 @@ def extract_text_from_file(file):
             page_text = "\n".join(b[4].strip() for b in left + right if b[4].strip())
             full_text.append(page_text)
         doc.close()
-        result = "\n".join(full_text)
-        if is_text_corrupted(result):
-            return None
-        return result or None
+        return "\n".join(full_text) or None
 
     elif filename.endswith('.txt'):
         file_bytes = file.read()
