@@ -133,9 +133,24 @@
     <div class="bottom-more" id="bottomMore">
         <div class="bottom-more__backdrop" id="bottomMoreBackdrop"></div>
         <div class="bottom-more__sheet">
-            <a href="{{ url_for('dictionary.index') }}" class="bottom-more__item">사전</a>
-            <a href="{{ url_for('dashboard.index') }}" class="bottom-more__item">대시보드</a>
-            <a href="{{ url_for('board.list') }}" class="bottom-more__item">학습상담</a>
+            <a href="{{ url_for('dictionary.index') }}" class="bottom-more__item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                사전
+            </a>
+            <a href="{{ url_for('dashboard.index') }}" class="bottom-more__item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+                </svg>
+                대시보드
+            </a>
+            <a href="{{ url_for('board.list') }}" class="bottom-more__item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                학습상담
+            </a>
         </div>
     </div>
     {% endif %}

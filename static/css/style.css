@@ -2029,8 +2029,8 @@ a:hover {
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 3px;
-        padding: 10px 4px 8px;
+        gap: 4px;
+        padding: 14px 4px 12px;
         text-decoration: none;
         color: var(--color-text-muted);
         font-size: 0.62rem;
@@ -2080,7 +2080,7 @@ a:hover {
 
     .bottom-more__sheet {
         position: absolute;
-        bottom: calc(60px + env(safe-area-inset-bottom));
+        bottom: calc(74px + env(safe-area-inset-bottom));
         left: 0;
         right: 0;
         background: var(--color-surface);
@@ -2090,7 +2090,9 @@ a:hover {
     }
 
     .bottom-more__item {
-        display: block;
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
         padding: var(--space-md) var(--space-lg);
         color: var(--color-text);
         text-decoration: none;
@@ -2102,14 +2104,22 @@ a:hover {
         border-bottom: none;
     }
 
-    /* 콘텐츠/푸터가 탭바에 가리지 않도록 하단 여백 추가 */
+    .bottom-more__item svg {
+        width: 22px;
+        height: 22px;
+        flex-shrink: 0;
+        color: var(--color-text-muted);
+    }
+
+    /* 탭바 높이 증가에 따른 여백 조정 */
     .main-content {
-        padding-bottom: calc(80px + env(safe-area-inset-bottom));
+        padding-bottom: calc(95px + env(safe-area-inset-bottom));
     }
 
     .footer {
-        padding-bottom: calc(80px + env(safe-area-inset-bottom));
+        padding-bottom: calc(95px + env(safe-area-inset-bottom));
     }
+
 }
 
 /* -------------------------------------------------------------------
