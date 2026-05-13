@@ -32,7 +32,9 @@
     <nav class="navbar">
         <a href="{{ url_for('main.home') }}" class="nav-brand"><span class="nav-brand__voca">voca</span><span class="nav-brand__sea">海</span><span class="nav-brand__high">(high)</span></a>
 
-        <div class="nav-links">
+        <button class="nav-toggle" id="navToggle" aria-label="메뉴 열기">☰</button>
+
+        <div class="nav-links" id="navLinks">
             {% if current_user.is_authenticated %}
                 <!-- 로그인 상태 -->
                 <span class="nav-status">🟢 {{ current_user.nickname }}님 접속중</span>
@@ -82,5 +84,16 @@
     </footer>
 
     {% block extra_scripts %}{% endblock %}
+
+    <script>
+        var toggle = document.getElementById('navToggle');
+        var navLinks = document.getElementById('navLinks');
+        if (toggle) {
+            toggle.addEventListener('click', function() {
+                navLinks.classList.toggle('nav-links--open');
+                toggle.textContent = navLinks.classList.contains('nav-links--open') ? '✕' : '☰';
+            });
+        }
+    </script>
 </body>
 </html>
