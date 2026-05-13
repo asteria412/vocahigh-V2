@@ -355,17 +355,13 @@ def generate_image_from_text(description):
     
     try:
         response = client.images.generate(
-            model="gpt-image-1",
+            model="dall-e-3",
             prompt=f"A realistic illustration for a Chinese language proficiency test (HSK). Scene: {description}. Clean style, no text inside image.",
             size="1024x1024",
+            quality="standard",
             n=1,
         )
-        item = response.data[0]
-        if getattr(item, 'url', None):
-            return item.url
-        if getattr(item, 'b64_json', None):
-            return f"data:image/png;base64,{item.b64_json}"
-        return None
+        return response.data[0].url
     except Exception as e:
         print(f"Error generating image: {e}")
         return None
