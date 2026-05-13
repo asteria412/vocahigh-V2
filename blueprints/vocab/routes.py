@@ -204,8 +204,8 @@ def review():
             new_word = VocabWord(
                 vocab_list_id=new_list.id,
                 zh=w.get('zh', '')[:50],
-                pinyin=w.get('pinyin', '')[:200],
-                ko=w.get('ko', '')[:500],
+                pinyin=w.get('pinyin', '')[:100],
+                ko=w.get('ko', '')[:20],
                 pos=w.get('pos', '')[:20]
             )
             db.session.add(new_word)
