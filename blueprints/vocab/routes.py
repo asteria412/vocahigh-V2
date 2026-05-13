@@ -18,6 +18,8 @@ from extensions import db
 from models.vocab_list import VocabList
 from models.vocab_word import VocabWord
 from core.vocab_parser import change_text_to_vocab_df
+from core.pdf_loader import is_text_corrupted
+from services.llm import process_vocab_with_llm
 from blueprints.vocab import vocab_bp
 
 try:
@@ -58,7 +60,7 @@ def delete_pending(key):
 def extract_text_from_file(file):
     """
     업로드된 파일에서 텍스트 추출.
-    PDF: text_change.py와 동일한 fitz 로직, Flask용 .read() 적용.
+    PDF: 2컬럼 레이아웃 대응 — 좌측 컬럼 전체 → 우측 컬럼 전체 순으로 읽음.
     TXT: UTF-8 / CP949 순으로 디코딩.
     """
     filename = file.filename.lower()
@@ -68,9 +70,20 @@ def extract_text_from_file(file):
         doc = fitz.open(stream=pdf_bytes, filetype="pdf")
         full_text = []
         for page in doc:
-            full_text.append(page.get_text())
+            page_width = page.rect.width
+            # (x0, y0, x1, y1, text, block_no, block_type) — type 0 = 텍스트 블록
+            blocks = page.get_text("blocks")
+            text_blocks = [b for b in blocks if b[6] == 0]
+            mid = page_width / 2
+            left  = sorted([b for b in text_blocks if b[0] < mid],  key=lambda b: b[1])
+            right = sorted([b for b in text_blocks if b[0] >= mid], key=lambda b: b[1])
+            page_text = "\n".join(b[4].strip() for b in left + right if b[4].strip())
+            full_text.append(page_text)
         doc.close()
-        return "\n".join(full_text) or None
+        result = "\n".join(full_text)
+        if is_text_corrupted(result):
+            return None
+        return result or None
 
     elif filename.endswith('.txt'):
         file_bytes = file.read()
@@ -127,21 +140,29 @@ def upload():
             return render_template('vocab/upload.html')
 
         if not text:
-            flash('파일에서 텍스트를 추출하지 못했어요. 서버 콘솔 로그를 확인해주세요.', 'danger')
+            flash('파일에서 텍스트를 추출하지 못했어요. 텍스트 복사 방지가 걸린 파일이거나 이미지 스캔본일 수 있어요.', 'danger')
             return render_template('vocab/upload.html')
 
-        # 단어 파싱 (V1 core/vocab_parser.py 재사용)
+        # 1차 파싱 (정규식 기반)
         df = change_text_to_vocab_df(text)
         if df is None or df.empty:
             flash('단어를 찾을 수 없어요. 파일 내용을 확인해주세요.', 'danger')
             return render_template('vocab/upload.html')
+
+        # 2차 보정 — 빈칸(NO_PINYIN / NO_MEANING)이 있는 항목만 GPT가 원본 텍스트와 대조해서 보정
+        n_missing = len(df[df['flags'] != 'OK'])
+        if n_missing > 0:
+            df = process_vocab_with_llm(df, text)
+            ai_note = f' (AI가 {n_missing}개 항목 보정 완료)'
+        else:
+            ai_note = ''
 
         # 파싱 결과를 임시 파일에 저장 (세션 4KB 한도 우회)
         words_data = df.to_dict('records')
         key = save_pending(words_data, list_name)
         session['pending_key'] = key
 
-        flash(f'{len(words_data)}개 단어를 찾았어요. 내용을 확인해주세요.', 'success')
+        flash(f'총 {len(words_data)}개 단어를 추출했어요{ai_note}. 내용을 확인해주세요.', 'success')
         return redirect(url_for('vocab.review'))
 
     return render_template('vocab/upload.html')
