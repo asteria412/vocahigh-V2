@@ -121,7 +121,23 @@
             </svg>
             <span>작문</span>
         </a>
+        <button class="bottom-nav__item" id="bottomMoreBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>
+            </svg>
+            <span>더보기</span>
+        </button>
     </nav>
+
+    <!-- PWA 더보기 드로어 -->
+    <div class="bottom-more" id="bottomMore">
+        <div class="bottom-more__backdrop" id="bottomMoreBackdrop"></div>
+        <div class="bottom-more__sheet">
+            <a href="{{ url_for('dictionary.index') }}" class="bottom-more__item">사전</a>
+            <a href="{{ url_for('dashboard.index') }}" class="bottom-more__item">대시보드</a>
+            <a href="{{ url_for('board.list') }}" class="bottom-more__item">학습상담</a>
+        </div>
+    </div>
     {% endif %}
 
     {% block extra_scripts %}{% endblock %}
@@ -133,6 +149,18 @@
             toggle.addEventListener('click', function() {
                 navLinks.classList.toggle('nav-links--open');
                 toggle.textContent = navLinks.classList.contains('nav-links--open') ? '✕' : '☰';
+            });
+        }
+
+        var moreBtn = document.getElementById('bottomMoreBtn');
+        var moreMenu = document.getElementById('bottomMore');
+        var moreBackdrop = document.getElementById('bottomMoreBackdrop');
+        if (moreBtn) {
+            moreBtn.addEventListener('click', function() {
+                moreMenu.classList.toggle('bottom-more--open');
+            });
+            moreBackdrop.addEventListener('click', function() {
+                moreMenu.classList.remove('bottom-more--open');
             });
         }
 

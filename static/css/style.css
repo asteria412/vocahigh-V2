@@ -2052,6 +2052,56 @@ a:hover {
         stroke-width: 2.5;
     }
 
+    /* 더보기 버튼 */
+    #bottomMoreBtn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-family: inherit;
+    }
+
+    /* 더보기 드로어 */
+    .bottom-more {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 300;
+    }
+
+    .bottom-more--open {
+        display: block;
+    }
+
+    .bottom-more__backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.3);
+    }
+
+    .bottom-more__sheet {
+        position: absolute;
+        bottom: calc(60px + env(safe-area-inset-bottom));
+        left: 0;
+        right: 0;
+        background: var(--color-surface);
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        border-top: 1px solid var(--color-border);
+        padding: var(--space-sm) 0;
+    }
+
+    .bottom-more__item {
+        display: block;
+        padding: var(--space-md) var(--space-lg);
+        color: var(--color-text);
+        text-decoration: none;
+        font-size: 1rem;
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    .bottom-more__item:last-child {
+        border-bottom: none;
+    }
+
     /* 콘텐츠/푸터가 탭바에 가리지 않도록 하단 여백 추가 */
     .main-content {
         padding-bottom: calc(80px + env(safe-area-inset-bottom));
