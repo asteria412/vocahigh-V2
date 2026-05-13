@@ -2130,6 +2130,16 @@ a:hover {
         padding-bottom: calc(95px + env(safe-area-inset-bottom));
     }
 
+    /* 하단 고정 버튼이 탭바 위에 뜨도록 */
+    .sticky-submit {
+        bottom: calc(74px + env(safe-area-inset-bottom));
+        z-index: 150;
+    }
+
+    .sticky-bottom-pad {
+        height: calc(80px + 74px + env(safe-area-inset-bottom));
+    }
+
 }
 
 /* -------------------------------------------------------------------
