@@ -355,7 +355,7 @@ def generate_image_from_text(description):
     
     try:
         response = client.images.generate(
-            model="gpt-image-1.5",
+            model="gpt-image-1-mini",
             prompt=f"A realistic illustration for a Chinese language proficiency test (HSK). Scene: {description}. Clean style, no text inside image.",
             size="1024x1024",
             n=1,
