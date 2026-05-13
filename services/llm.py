@@ -355,10 +355,9 @@ def generate_image_from_text(description):
     
     try:
         response = client.images.generate(
-            model="dall-e-3",
+            model="dall-e-2",
             prompt=f"A realistic illustration for a Chinese language proficiency test (HSK). Scene: {description}. Clean style, no text inside image.",
-            size="1024x1024",
-            quality="standard",
+            size="512x512",
             n=1,
         )
         return response.data[0].url
