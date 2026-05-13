@@ -2027,6 +2027,9 @@ a:hover {
         border-top: 1px solid var(--color-border);
         z-index: 200;
         padding-bottom: env(safe-area-inset-bottom);
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+        will-change: transform;
     }
 
     .bottom-nav__item {
