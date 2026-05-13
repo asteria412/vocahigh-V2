@@ -4,7 +4,7 @@
   "description": "AI 기반 HSK 맞춤 학습 플랫폼",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#4A90D9",
+  "background_color": "#F8F9FA",
   "theme_color": "#4A90D9",
   "lang": "ko",
   "icons": [
