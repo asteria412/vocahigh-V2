@@ -1896,7 +1896,7 @@ a:hover {
    ------------------------------------------------------------------- */
 @media (min-width: 769px) {
     .navbar {
-        padding: var(--space-md) 5%;
+        padding: var(--space-md) 5% var(--space-md) var(--space-lg);
     }
 }
 
