@@ -58,8 +58,8 @@ def delete_pending(key):
 
 def extract_text_from_file(file):
     """
-    업로드된 파일에서 텍스트 추출.
-    PDF: 2컬럼 레이아웃 대응 — 좌측 컬럼 전체 → 우측 컬럼 전체 순으로 읽음.
+    업로드된 파일에서 텍스트 추출 (V1 동일 방식).
+    PDF: PyMuPDF 기본 get_text().
     TXT: UTF-8 / CP949 순으로 디코딩.
     """
     filename = file.filename.lower()
@@ -69,15 +69,7 @@ def extract_text_from_file(file):
         doc = fitz.open(stream=pdf_bytes, filetype="pdf")
         full_text = []
         for page in doc:
-            page_width = page.rect.width
-            # (x0, y0, x1, y1, text, block_no, block_type) — type 0 = 텍스트 블록
-            blocks = page.get_text("blocks")
-            text_blocks = [b for b in blocks if b[6] == 0]
-            mid = page_width / 2
-            left  = sorted([b for b in text_blocks if b[0] < mid],  key=lambda b: b[1])
-            right = sorted([b for b in text_blocks if b[0] >= mid], key=lambda b: b[1])
-            page_text = "\n".join(b[4].strip() for b in left + right if b[4].strip())
-            full_text.append(page_text)
+            full_text.append(page.get_text())
         doc.close()
         return "\n".join(full_text) or None
 
