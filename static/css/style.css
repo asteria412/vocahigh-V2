@@ -98,6 +98,7 @@ a:hover {
     font-size: 1.4rem;
     font-weight: 700;
     text-decoration: none;
+    line-height: 1;
 }
 
 .nav-brand__voca {
@@ -1888,6 +1889,15 @@ a:hover {
     text-align: center;
     color: var(--color-text-muted);
     font-size: 0.85rem;
+}
+
+/* -------------------------------------------------------------------
+   데스크탑 전용: navbar 좌우 패딩 균형
+   ------------------------------------------------------------------- */
+@media (min-width: 769px) {
+    .navbar {
+        padding: var(--space-md) 5%;
+    }
 }
 
 /* -------------------------------------------------------------------
