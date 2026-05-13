@@ -13,9 +13,9 @@ class VocabWord(db.Model):
     id            = db.Column(db.Integer, primary_key=True)
     vocab_list_id = db.Column(db.Integer, db.ForeignKey('vocab_lists.id'), nullable=False)
 
-    zh      = db.Column(db.String(50), nullable=False)   # 한자 (예: 学习)
-    pinyin  = db.Column(db.String(100))                  # 병음 (예: xuéxí)
-    ko      = db.Column(db.String(200), nullable=False)  # 한국어 의미 (예: 학습하다)
+    zh      = db.Column(db.String(50),  nullable=False)   # 한자 (예: 学习)
+    pinyin  = db.Column(db.String(200))                  # 병음 (예: xuéxí)
+    ko      = db.Column(db.String(500), nullable=False)  # 한국어 의미 (예: 학습하다)
     pos     = db.Column(db.String(20))                   # 품사 (예: 동사, 명사)
 
     def to_dict(self):

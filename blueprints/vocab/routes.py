@@ -203,10 +203,10 @@ def review():
         for w in saved_words:
             new_word = VocabWord(
                 vocab_list_id=new_list.id,
-                zh=w.get('zh', ''),
-                pinyin=w.get('pinyin', ''),
-                ko=w.get('ko', ''),
-                pos=w.get('pos', '')
+                zh=w.get('zh', '')[:50],
+                pinyin=w.get('pinyin', '')[:200],
+                ko=w.get('ko', '')[:500],
+                pos=w.get('pos', '')[:20]
             )
             db.session.add(new_word)
 
