@@ -28,7 +28,7 @@
                 </p>
                 <input class="form-input" type="text" name="ans_{{ loop.index0 }}"
                        placeholder="한국어 뜻" autocomplete="off" autocorrect="off"
-                       spellcheck="false">
+                       spellcheck="false" lang="ko">
             {% else %}
                 <p class="quiz-prompt">다음 뜻에 맞는 한자를 적으세요</p>
                 <p class="quiz-word quiz-word--ko">{{ q.ko }}
@@ -50,4 +50,18 @@
 <p style="margin-top:var(--space-lg);text-align:center;font-size:0.9rem;">
     <a href="{{ url_for('quiz.setup') }}">← 처음부터 다시 선택</a>
 </p>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // 탭 시 키보드 재활성화 (iPad 펜슬 Scribble 후)
+    document.querySelectorAll('.form-input[type="text"]').forEach(function (el) {
+        el.addEventListener('touchend', function () {
+            var input = this;
+            input.readOnly = true;
+            input.readOnly = false;
+            input.focus();
+        }, { passive: true });
+    });
+</script>
 {% endblock %}
