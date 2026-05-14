@@ -56,10 +56,9 @@
     // iPad 펜슬 Scribble 후 탭 시 키보드 재활성화
     input.addEventListener('touchend', function () {
         var el = this;
-        if (document.activeElement === el) {
-            el.blur();
-            requestAnimationFrame(function () { el.focus(); });
-        }
+        el.readOnly = true;
+        el.readOnly = false;
+        el.focus();
     }, { passive: true });
 </script>
 {% endblock %}
