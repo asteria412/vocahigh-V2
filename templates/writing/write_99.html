@@ -54,9 +54,11 @@
     input.addEventListener('input', () => { counter.textContent = input.value.length; });
 
     // iPad 펜슬 Scribble 후 탭 시 키보드 재활성화
-    input.addEventListener('touchstart', function () {
-        if (document.activeElement === this) {
-            this.blur();
+    input.addEventListener('touchend', function () {
+        var el = this;
+        if (document.activeElement === el) {
+            el.blur();
+            requestAnimationFrame(function () { el.focus(); });
         }
     }, { passive: true });
 </script>
