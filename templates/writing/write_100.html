@@ -37,7 +37,13 @@
 <div class="writing-mission">
     위 그림 상황에 맞게 80자 내외로 작문하세요.
 </div>
-<p class="form-hint pencil-notice" style="text-align:center;">펜슬 사용 시 언어 전환이 매끄럽지 않을 수 있어요. 탭하여 키보드 언어 설정을 한 번 더 확인해 주세요. 😭</p>
+<div class="wo-hint-card pencil-notice">
+    <p style="margin-bottom:var(--space-sm);">펜슬 사용 시 언어 전환이 매끄럽지 않을 수 있어요 😭</p>
+    <p style="font-weight:600;margin-bottom:var(--space-xs);">🍯 펜슬 사용 시 꿀팁!</p>
+    <ol style="padding-left:1.2em;margin:0;line-height:1.7;">
+        <li>탭하여 키보드의 입력할 언어 설정을 한 번 더 확인해 주세요.</li>
+    </ol>
+</div>
 
 <form method="POST" action="{{ url_for('writing.eval_100') }}">
     <div class="form-group">
