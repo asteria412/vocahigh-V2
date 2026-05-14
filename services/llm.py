@@ -254,10 +254,10 @@ def generate_hybrid_question_99(user_vocab_list):
             model="gpt-4o",
             messages=[{"role": "system", "content": "JSON 생성 전문가입니다."},
                       {"role": "user", "content": prompt}],
-            temperature=0.8 # 다양성을 위해 온도 높임
+            response_format={"type": "json_object"},
+            temperature=0.8
         )
         content = response.choices[0].message.content.strip()
-        content = content.replace("```json", "").replace("```", "")
         return json.loads(content)
     except Exception as e:
         print(f"Error generating hybrid question: {e}")
