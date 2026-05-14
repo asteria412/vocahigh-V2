@@ -38,8 +38,13 @@
     위 그림 상황에 맞게 80자 내외로 작문하세요.
 </div>
 <div class="wo-hint-card pencil-notice">
-    <p style="margin-bottom:var(--space-sm);">펜슬 사용 시 언어 전환이 매끄럽지 않을 수 있어요 😭</p>
-    <p style="margin:0;">🍯 펜슬 사용 시 꿀팁: 탭하여 키보드의 입력할 언어 설정을 한 번 더 확인해 주세요.</p>
+    <p style="margin-bottom:var(--space-xs);">펜슬 사용 시 언어 전환이 매끄럽지 않을 수 있어요 😭</p>
+    <p style="margin-bottom:var(--space-sm);color:var(--color-text-muted);font-size:0.85rem;">(직전 입력 언어를 기억하는 습성이 있습니다.)</p>
+    <p style="font-weight:600;margin-bottom:var(--space-xs);">🍯 작문 문제 펜슬 사용 시 꿀팁!</p>
+    <ol style="padding-left:1.2em;margin:0;line-height:1.7;">
+        <li>탭하여 키보드의 입력할 언어 설정을 한 번 더 확인해 주세요.</li>
+        <li>입력창을 확대하여 글자를 크고 정확하게 입력하시면 도움이 됩니다.</li>
+    </ol>
 </div>
 
 <form method="POST" action="{{ url_for('writing.eval_100') }}">
