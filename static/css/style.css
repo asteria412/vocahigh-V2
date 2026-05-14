@@ -554,6 +554,16 @@ a:hover {
     margin-left: var(--space-xs);
 }
 
+.pencil-notice {
+    margin-bottom: var(--space-md);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .pencil-notice {
+        display: none;
+    }
+}
+
 .form-input {
     width: 100%;
     padding: var(--space-md);
