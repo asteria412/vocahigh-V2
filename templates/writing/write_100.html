@@ -42,7 +42,8 @@
     <div class="form-group">
         <textarea class="form-input writing-textarea" name="user_input"
                   placeholder="여기에 중국어로 작문하세요..."
-                  rows="6" id="writing-input"></textarea>
+                  rows="6" id="writing-input"
+                  inputmode="text"></textarea>
         <p class="writing-char-count"><span id="char-count">0</span>자</p>
     </div>
     <button type="submit" class="btn btn--primary btn--full">제출하고 채점받기</button>
@@ -61,5 +62,12 @@
     const input = document.getElementById('writing-input');
     const counter = document.getElementById('char-count');
     input.addEventListener('input', () => { counter.textContent = input.value.length; });
+
+    // iPad 펜슬 Scribble 후 탭 시 키보드 재활성화
+    input.addEventListener('touchstart', function () {
+        if (document.activeElement === this) {
+            this.blur();
+        }
+    }, { passive: true });
 </script>
 {% endblock %}
