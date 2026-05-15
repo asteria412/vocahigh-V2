@@ -69,6 +69,15 @@
         {% endif %}
     </nav>
 
+    <!-- PWA 알림 권한 요청 배너 (standalone 모드 + 미결정 상태일 때만 노출) -->
+    {% if current_user.is_authenticated %}
+    <div id="notif-banner" style="display:none; background:var(--color-primary); color:#fff; padding:10px var(--space-md); text-align:center; font-size:0.88rem;">
+        🔔 알림을 허용하면 새 답변을 아이콘으로 확인할 수 있어요.
+        <button id="notif-allow" style="margin-left:10px; padding:4px 12px; background:#fff; color:var(--color-primary); border:none; border-radius:var(--radius-sm); font-weight:700; cursor:pointer;">허용</button>
+        <button id="notif-dismiss" style="margin-left:6px; padding:4px 8px; background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.5); border-radius:var(--radius-sm); cursor:pointer;">나중에</button>
+    </div>
+    {% endif %}
+
     <!-- ================================================================
          플래시 메시지 (성공/실패 알림)
          flash('메시지', '카테고리') 로 Python에서 보낸 알림이 여기 표시돼.
@@ -205,13 +214,44 @@
         }
 
         // 앱 아이콘 뱃지 (Web App Badging API - iOS 16.4+, Android Chrome)
-        if ('setAppBadge' in navigator) {
+        function updateBadge() {
+            if (!('setAppBadge' in navigator)) return;
             {% if current_user.is_authenticated and badge_total > 0 %}
             navigator.setAppBadge({{ badge_total }});
             {% else %}
             navigator.clearAppBadge();
             {% endif %}
         }
+        updateBadge();
+
+        // PWA 알림 권한 배너 — standalone 모드 + 아직 권한 요청 안 한 경우만
+        (function() {
+            var isPwa = window.matchMedia('(display-mode: standalone)').matches;
+            var hasNotif = 'Notification' in window;
+            var dismissed = localStorage.getItem('notif_banner_dismissed');
+            if (isPwa && hasNotif && Notification.permission === 'default' && !dismissed) {
+                document.getElementById('notif-banner').style.display = 'block';
+            }
+
+            var allowBtn = document.getElementById('notif-allow');
+            var dismissBtn = document.getElementById('notif-dismiss');
+            if (allowBtn) {
+                allowBtn.addEventListener('click', function() {
+                    Notification.requestPermission().then(function() {
+                        updateBadge();
+                    });
+                    document.getElementById('notif-banner').style.display = 'none';
+                    localStorage.setItem('notif_banner_dismissed', '1');
+                });
+            }
+            if (dismissBtn) {
+                dismissBtn.addEventListener('click', function() {
+                    document.getElementById('notif-banner').style.display = 'none';
+                    localStorage.setItem('notif_banner_dismissed', '1');
+                });
+            }
+        })();
+
     </script>
 </body>
 </html>
