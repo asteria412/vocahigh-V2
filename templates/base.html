@@ -178,6 +178,12 @@
                 </svg>
                 비밀번호 변경
             </a>
+            <button class="bottom-more__item" id="notifRequestBtn" style="display:none;" onclick="requestNotifPermission()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+                알림 켜기
+            </button>
         </div>
     </div>
     {% endif %}
@@ -224,6 +230,30 @@
         }
         updateBadge();
 
+        function requestNotifPermission() {
+            if (!('Notification' in window)) {
+                alert('이 기기/브라우저는 알림을 지원하지 않아요.');
+                return;
+            }
+            Notification.requestPermission().then(function(permission) {
+                if (permission === 'granted') {
+                    updateBadge();
+                    var btn = document.getElementById('notifRequestBtn');
+                    if (btn) btn.style.display = 'none';
+                }
+            });
+        }
+
+        // 더보기 드로어 '알림 켜기' 버튼 — 권한 미결정/거부 상태일 때만 노출
+        (function() {
+            if (!('Notification' in window)) return;
+            var btn = document.getElementById('notifRequestBtn');
+            if (!btn) return;
+            if (Notification.permission !== 'granted') {
+                btn.style.display = 'flex';
+            }
+        })();
+
         // PWA 알림 권한 배너 — standalone 모드 + 아직 권한 요청 안 한 경우만
         (function() {
             var isPwa = window.matchMedia('(display-mode: standalone)').matches;
@@ -237,9 +267,7 @@
             var dismissBtn = document.getElementById('notif-dismiss');
             if (allowBtn) {
                 allowBtn.addEventListener('click', function() {
-                    Notification.requestPermission().then(function() {
-                        updateBadge();
-                    });
+                    Notification.requestPermission().then(function() { updateBadge(); });
                     document.getElementById('notif-banner').style.display = 'none';
                     localStorage.setItem('notif_banner_dismissed', '1');
                 });
