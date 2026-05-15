@@ -1,7 +1,6 @@
 # 경로: services/llm.py
 
 import os, json
-import pandas as pd
 from openai import OpenAI
 from dotenv import load_dotenv
 import random
