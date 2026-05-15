@@ -21,8 +21,9 @@ class User(UserMixin, db.Model):
     # 비밀번호는 bcrypt로 해싱된 값만 저장 (원본은 절대 저장 안 함)
     password_hash = db.Column(db.String(255), nullable=False)
 
-    is_admin   = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    is_admin             = db.Column(db.Boolean, default=False)
+    force_password_reset = db.Column(db.Boolean, default=False)
+    created_at           = db.Column(db.DateTime, default=datetime.utcnow)
 
     # -------------------------------------------------------------------
     # 관계 정의

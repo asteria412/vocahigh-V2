@@ -133,6 +133,12 @@ def login():
             # Chrome 세션복원이 쿠키를 되살려도 4시간 지나면 자동 로그아웃
             session.permanent = True
         login_user(user, remember=remember_me)
+
+        # 임시 비밀번호 상태이면 비밀번호 변경 페이지로 강제 이동
+        if user.force_password_reset:
+            flash('임시 비밀번호로 로그인됐어요. 새 비밀번호를 설정해주세요.', 'warning')
+            return redirect(url_for('auth.change_password'))
+
         flash(f'어서 와요, {user.nickname}님!', 'success')
 
         # 로그인 전에 가려던 페이지가 있으면 거기로, 없으면 홈으로
@@ -151,6 +157,44 @@ def logout():
     logout_user()
     flash('로그아웃됐어요.', 'info')
     return redirect(url_for('main.home'))
+
+
+# -------------------------------------------------------------------
+# 비밀번호 변경 (로그인 상태)
+# -------------------------------------------------------------------
+@auth_bp.route('/change-password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    forced = current_user.force_password_reset
+
+    if request.method == 'POST':
+        current_pw = request.form.get('current_password', '')
+        new_pw     = request.form.get('new_password', '').strip()
+        confirm_pw = request.form.get('confirm_password', '').strip()
+
+        errors = []
+        if not current_user.check_password(current_pw):
+            errors.append('현재 비밀번호가 올바르지 않아요.')
+        if len(new_pw) < 6:
+            errors.append('새 비밀번호는 6자 이상이어야 해요.')
+        elif len(new_pw) > 100:
+            errors.append('비밀번호가 너무 길어요.')
+        if new_pw != confirm_pw:
+            errors.append('새 비밀번호가 일치하지 않아요.')
+
+        if errors:
+            for e in errors:
+                flash(e, 'danger')
+            return render_template('auth/change_password.html', forced=forced)
+
+        current_user.set_password(new_pw)
+        current_user.force_password_reset = False
+        db.session.commit()
+
+        flash('비밀번호가 변경됐어요.', 'success')
+        return redirect(url_for('main.home'))
+
+    return render_template('auth/change_password.html', forced=forced)
 
 
 # -------------------------------------------------------------------

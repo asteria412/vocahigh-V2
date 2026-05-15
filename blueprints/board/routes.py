@@ -166,6 +166,7 @@ def resolve_reset_request(req_id):
         return redirect(url_for('board.reset_requests'))
 
     user.set_password(temp_pw)
+    user.force_password_reset = True
 
     reply_text = f'임시 비밀번호: {temp_pw}'
     if admin_note:
