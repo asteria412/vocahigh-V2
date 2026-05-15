@@ -187,6 +187,20 @@ def resolve_reset_request(req_id):
 
 
 # -------------------------------------------------------------------
+# 재설정 요청 삭제 (어드민 전용)
+# -------------------------------------------------------------------
+@board_bp.route('/reset-requests/<int:req_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def delete_reset_request(req_id):
+    req = PasswordResetRequest.query.get_or_404(req_id)
+    db.session.delete(req)
+    db.session.commit()
+    flash('요청이 삭제됐어요.', 'info')
+    return redirect(url_for('board.reset_requests'))
+
+
+# -------------------------------------------------------------------
 # 답변 삭제 (어드민 전용)
 # -------------------------------------------------------------------
 @board_bp.route('/<int:post_id>/reply/<int:reply_id>/delete', methods=['POST'])

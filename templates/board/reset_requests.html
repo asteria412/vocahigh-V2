@@ -42,16 +42,30 @@
                     placeholder="추가 안내 메시지 (선택)"
                 >
             </div>
-            <div style="display:flex; justify-content:flex-end;">
+            <div style="display:flex; justify-content:flex-end; gap:var(--space-sm);">
                 <button type="submit" class="btn btn--primary btn--sm"
                         onclick="return confirm('{{ req.nickname }}님의 비밀번호를 초기화할까요?')">
                     초기화 처리
                 </button>
             </div>
         </form>
+        <div style="display:flex; justify-content:flex-end; margin-top:var(--space-sm);">
+            <form method="POST"
+                  action="{{ url_for('board.delete_reset_request', req_id=req.id) }}"
+                  onsubmit="return confirm('요청을 삭제할까요?')">
+                <button type="submit" class="btn btn--danger-ghost btn--sm">삭제</button>
+            </form>
+        </div>
         {% else %}
         <div class="wo-hint-card" style="margin-top:var(--space-sm); font-size:0.85rem;">
             <pre style="white-space:pre-wrap; word-break:break-all; font-family:inherit; margin:0;">{{ req.admin_reply }}</pre>
+        </div>
+        <div style="display:flex; justify-content:flex-end; margin-top:var(--space-sm);">
+            <form method="POST"
+                  action="{{ url_for('board.delete_reset_request', req_id=req.id) }}"
+                  onsubmit="return confirm('처리 완료된 요청을 삭제할까요?')">
+                <button type="submit" class="btn btn--danger-ghost btn--sm">삭제</button>
+            </form>
         </div>
         {% endif %}
     </li>
