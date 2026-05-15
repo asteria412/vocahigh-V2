@@ -86,8 +86,8 @@ def register():
             return render_template('auth/register.html',
                                    form_data={'nickname': nickname, 'email': email})
 
-        # 4. 새 유저 생성 (name 컬럼은 nickname으로 채움)
-        new_user = User(name=nickname, nickname=nickname, email=email)
+        # 4. 새 유저 생성
+        new_user = User(nickname=nickname, email=email)
         new_user.set_password(password)
 
         # 4. DB에 저장
