@@ -7,6 +7,8 @@ from flask_login import login_required, current_user
 from extensions import db
 from models.post import Post
 from models.reply import Reply
+from models.user import User
+from models.password_reset import PasswordResetRequest
 from blueprints.auth.decorators import admin_required
 from blueprints.board import board_bp
 
@@ -22,7 +24,12 @@ def list():
     page = request.args.get('page', 1, type=int)
     filter_status = request.args.get('status', 'all')  # all / unanswered / answered
 
-    query = Post.query.order_by(Post.created_at.desc())
+    # 관리자는 전체 조회, 일반 유저는 본인 글만
+    if current_user.is_admin:
+        query = Post.query.order_by(Post.created_at.desc())
+    else:
+        query = Post.query.filter_by(user_id=current_user.id)\
+                          .order_by(Post.created_at.desc())
 
     if filter_status == 'unanswered':
         query = query.filter_by(is_answered=False)
@@ -73,6 +80,10 @@ def write():
 def detail(post_id):
     post = Post.query.get_or_404(post_id)
 
+    # 본인 글 또는 관리자만 접근 가능
+    if post.user_id != current_user.id and not current_user.is_admin:
+        abort(403)
+
     if request.method == 'POST':
         # 어드민만 답변 가능
         if not current_user.is_admin:
@@ -119,6 +130,53 @@ def delete(post_id):
 
     flash('게시글이 삭제됐어요.', 'info')
     return redirect(url_for('board.list'))
+
+
+# -------------------------------------------------------------------
+# 비밀번호 재설정 요청 목록 (어드민 전용)
+# -------------------------------------------------------------------
+@board_bp.route('/reset-requests')
+@login_required
+@admin_required
+def reset_requests():
+    requests = PasswordResetRequest.query\
+                   .order_by(PasswordResetRequest.created_at.desc()).all()
+    return render_template('board/reset_requests.html', requests=requests)
+
+
+# -------------------------------------------------------------------
+# 비밀번호 재설정 처리 (어드민 전용)
+# -------------------------------------------------------------------
+@board_bp.route('/reset-requests/<int:req_id>/resolve', methods=['POST'])
+@login_required
+@admin_required
+def resolve_reset_request(req_id):
+    req = PasswordResetRequest.query.get_or_404(req_id)
+
+    temp_pw    = request.form.get('temp_password', '').strip()
+    admin_note = request.form.get('admin_note', '').strip()
+
+    if not temp_pw or len(temp_pw) < 6:
+        flash('임시 비밀번호는 6자 이상이어야 해요.', 'danger')
+        return redirect(url_for('board.reset_requests'))
+
+    user = User.query.filter_by(nickname=req.nickname, email=req.email).first()
+    if not user:
+        flash('해당 계정을 찾을 수 없어요.', 'danger')
+        return redirect(url_for('board.reset_requests'))
+
+    user.set_password(temp_pw)
+
+    reply_text = f'임시 비밀번호: {temp_pw}'
+    if admin_note:
+        reply_text += f'\n\n{admin_note}'
+
+    req.admin_reply = reply_text
+    req.status = 'done'
+    db.session.commit()
+
+    flash(f'{req.nickname}님의 비밀번호가 초기화됐어요.', 'success')
+    return redirect(url_for('board.reset_requests'))
 
 
 # -------------------------------------------------------------------

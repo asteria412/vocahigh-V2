@@ -8,7 +8,7 @@
 from flask import Flask
 from config import config
 from extensions import db, login_manager
-from models import User, VocabList, VocabWord, Score  # DB 테이블 생성을 위해 모델 임포트 필요
+from models import User, VocabList, VocabWord, Score, PasswordResetRequest  # DB 테이블 생성을 위해 모델 임포트 필요
 
 
 def create_app(config_name='default'):

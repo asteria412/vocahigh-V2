@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}비밀번호 재설정 요청 — voca海{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <h2 class="form-page__title">비밀번호 재설정 요청</h2>
+    <p style="color:var(--color-text-muted); font-size:0.9rem; margin-bottom:var(--space-lg); text-align:center;">
+        별명과 가입 이메일을 입력하면 관리자가 임시 비밀번호를 설정해드려요.<br>
+        처리 결과는 비밀 번호(4자리)를 입력해 확인할 수 있어요.
+    </p>
+
+    <form method="POST" action="{{ url_for('auth.reset_request') }}" novalidate>
+
+        <div class="form-group">
+            <label class="form-label" for="nickname">별명</label>
+            <input
+                class="form-input"
+                type="text"
+                id="nickname"
+                name="nickname"
+                placeholder="가입 시 설정한 별명"
+                value="{{ form_data.get('nickname', '') }}"
+                autocomplete="username"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="email">이메일</label>
+            <input
+                class="form-input"
+                type="email"
+                id="email"
+                name="email"
+                placeholder="가입 시 사용한 이메일"
+                value="{{ form_data.get('email', '') }}"
+                autocomplete="email"
+                inputmode="email"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="pin">비밀 번호 (숫자 4자리)</label>
+            <input
+                class="form-input"
+                type="password"
+                id="pin"
+                name="pin"
+                placeholder="결과 확인 시 필요한 숫자 4자리"
+                maxlength="4"
+                inputmode="numeric"
+                pattern="[0-9]{4}"
+                required
+            >
+            <small style="color:var(--color-text-muted);">처리 결과를 확인할 때 사용하는 번호예요. 꼭 기억해두세요.</small>
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--full" style="margin-top:var(--space-md);">요청하기</button>
+    </form>
+
+    <p class="form-page__footer">
+        이미 요청하셨나요?
+        <a href="{{ url_for('auth.reset_view') }}">결과 확인하기</a>
+    </p>
+    <p class="form-page__footer">
+        <a href="{{ url_for('auth.login') }}">← 로그인으로 돌아가기</a>
+    </p>
+</div>
+{% endblock %}

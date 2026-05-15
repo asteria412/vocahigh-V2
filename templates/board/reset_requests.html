@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}비밀번호 재설정 요청 목록 — voca海{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2 class="page-title">비밀번호 재설정 요청</h2>
+    <a href="{{ url_for('board.list') }}" class="btn--back">← 게시판</a>
+</div>
+
+{% if requests %}
+<ul class="post-list">
+    {% for req in requests %}
+    <li class="post-item" style="padding:var(--space-md);">
+        <div class="post-item__top" style="margin-bottom:var(--space-sm);">
+            <span class="post-badge {% if req.status == 'done' %}post-badge--answered{% else %}post-badge--waiting{% endif %}">
+                {{ '처리 완료' if req.status == 'done' else '처리 대기' }}
+            </span>
+            <span class="post-item__title">{{ req.nickname }}</span>
+            <span style="color:var(--color-text-muted); font-size:0.85rem;">{{ req.email }}</span>
+        </div>
+        <div class="post-item__meta" style="margin-bottom:var(--space-sm);">
+            <span>요청일: {{ req.created_at.strftime('%Y.%m.%d %H:%M') }}</span>
+        </div>
+
+        {% if req.status == 'pending' %}
+        <form method="POST"
+              action="{{ url_for('board.resolve_reset_request', req_id=req.id) }}"
+              style="margin-top:var(--space-sm);">
+            <div class="form-group" style="margin-bottom:var(--space-sm);">
+                <input
+                    class="form-input"
+                    type="text"
+                    name="temp_password"
+                    placeholder="임시 비밀번호 (6자 이상)"
+                    required
+                    style="margin-bottom:var(--space-xs);"
+                >
+                <input
+                    class="form-input"
+                    type="text"
+                    name="admin_note"
+                    placeholder="추가 안내 메시지 (선택)"
+                >
+            </div>
+            <div style="display:flex; justify-content:flex-end;">
+                <button type="submit" class="btn btn--primary btn--sm"
+                        onclick="return confirm('{{ req.nickname }}님의 비밀번호를 초기화할까요?')">
+                    초기화 처리
+                </button>
+            </div>
+        </form>
+        {% else %}
+        <div class="wo-hint-card" style="margin-top:var(--space-sm); font-size:0.85rem;">
+            <pre style="white-space:pre-wrap; word-break:break-all; font-family:inherit; margin:0;">{{ req.admin_reply }}</pre>
+        </div>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<div class="empty-state">
+    <p>접수된 재설정 요청이 없어요.</p>
+</div>
+{% endif %}
+{% endblock %}

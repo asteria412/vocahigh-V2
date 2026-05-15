@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block title %}재설정 결과 확인 — voca海{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <h2 class="form-page__title">재설정 결과 확인</h2>
+
+    {% if reply %}
+    <!-- 처리 완료 → 임시 비밀번호 표시 -->
+    <div class="wo-hint-card" style="margin-bottom:var(--space-lg);">
+        <p style="font-weight:600; margin-bottom:var(--space-sm);">관리자 처리 완료</p>
+        <pre style="white-space:pre-wrap; word-break:break-all; font-family:inherit; margin:0;">{{ reply }}</pre>
+    </div>
+    <p style="color:var(--color-text-muted); font-size:0.85rem; text-align:center; margin-bottom:var(--space-lg);">
+        로그인 후 반드시 비밀번호를 변경해주세요.
+    </p>
+    <a href="{{ url_for('auth.login') }}" class="btn btn--primary btn--full">로그인하러 가기</a>
+
+    {% elif status == 'pending' %}
+    <!-- 아직 처리 전 -->
+    <div class="empty-state">
+        <p>아직 관리자가 처리하지 않았어요.</p>
+        <p>잠시 후 다시 확인해주세요.</p>
+    </div>
+
+    {% else %}
+    <!-- 초기 폼 -->
+    <p style="color:var(--color-text-muted); font-size:0.9rem; margin-bottom:var(--space-lg); text-align:center;">
+        요청 시 입력하신 별명·이메일·비밀 번호를 입력해주세요.
+    </p>
+
+    <form method="POST" action="{{ url_for('auth.reset_view') }}" novalidate>
+
+        <div class="form-group">
+            <label class="form-label" for="nickname">별명</label>
+            <input
+                class="form-input"
+                type="text"
+                id="nickname"
+                name="nickname"
+                placeholder="가입 시 설정한 별명"
+                autocomplete="username"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="email">이메일</label>
+            <input
+                class="form-input"
+                type="email"
+                id="email"
+                name="email"
+                placeholder="가입 시 사용한 이메일"
+                autocomplete="email"
+                inputmode="email"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="pin">비밀 번호 (숫자 4자리)</label>
+            <input
+                class="form-input"
+                type="password"
+                id="pin"
+                name="pin"
+                placeholder="요청 시 설정한 숫자 4자리"
+                maxlength="4"
+                inputmode="numeric"
+                pattern="[0-9]{4}"
+                required
+            >
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--full" style="margin-top:var(--space-md);">확인하기</button>
+    </form>
+
+    <p class="form-page__footer">
+        아직 요청을 안 하셨나요?
+        <a href="{{ url_for('auth.reset_request') }}">재설정 요청하기</a>
+    </p>
+    {% endif %}
+
+    <p class="form-page__footer">
+        <a href="{{ url_for('auth.login') }}">← 로그인으로 돌아가기</a>
+    </p>
+</div>
+{% endblock %}

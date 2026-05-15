@@ -15,6 +15,10 @@
        class="board-filter__tab {% if filter_status == 'unanswered' %}board-filter__tab--active{% endif %}">답변 대기</a>
     <a href="{{ url_for('board.list', status='answered') }}"
        class="board-filter__tab {% if filter_status == 'answered' %}board-filter__tab--active{% endif %}">답변 완료</a>
+    {% if current_user.is_admin %}
+    <a href="{{ url_for('board.reset_requests') }}"
+       class="board-filter__tab">🔑 비번 재설정 요청</a>
+    {% endif %}
 </div>
 
 {% if posts %}

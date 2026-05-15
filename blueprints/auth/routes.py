@@ -6,6 +6,7 @@ from flask import render_template, redirect, url_for, flash, request, session
 from flask_login import login_user, logout_user, login_required, current_user
 from extensions import db
 from models.user import User
+from models.password_reset import PasswordResetRequest
 from blueprints.auth import auth_bp
 import re
 
@@ -150,3 +151,79 @@ def logout():
     logout_user()
     flash('로그아웃됐어요.', 'info')
     return redirect(url_for('main.home'))
+
+
+# -------------------------------------------------------------------
+# 비밀번호 재설정 요청
+# -------------------------------------------------------------------
+@auth_bp.route('/reset-request', methods=['GET', 'POST'])
+def reset_request():
+    if request.method == 'POST':
+        nickname = request.form.get('nickname', '').strip()
+        email    = request.form.get('email', '').strip().lower()
+        pin      = request.form.get('pin', '').strip()
+
+        errors = []
+        if not nickname:
+            errors.append('별명을 입력해주세요.')
+        if not email or not is_valid_email(email):
+            errors.append('올바른 이메일 주소를 입력해주세요.')
+        if not pin or len(pin) != 4 or not pin.isdigit():
+            errors.append('비밀 번호는 숫자 4자리로 입력해주세요.')
+
+        if errors:
+            for e in errors:
+                flash(e, 'danger')
+            return render_template('auth/reset_request.html',
+                                   form_data={'nickname': nickname, 'email': email})
+
+        # 실제 존재하는 계정인지 확인 (보안상 메시지는 동일하게)
+        user = User.query.filter_by(nickname=nickname, email=email).first()
+        if not user:
+            flash('입력하신 정보와 일치하는 계정이 없어요.', 'danger')
+            return render_template('auth/reset_request.html',
+                                   form_data={'nickname': nickname, 'email': email})
+
+        req = PasswordResetRequest(nickname=nickname, email=email)
+        req.set_pin(pin)
+        db.session.add(req)
+        db.session.commit()
+
+        flash('요청이 접수됐어요. 관리자가 처리하면 이 페이지에서 결과를 확인할 수 있어요.', 'success')
+        return redirect(url_for('auth.reset_view'))
+
+    return render_template('auth/reset_request.html', form_data={})
+
+
+# -------------------------------------------------------------------
+# 재설정 결과 확인 (PIN 입력)
+# -------------------------------------------------------------------
+@auth_bp.route('/reset-view', methods=['GET', 'POST'])
+def reset_view():
+    reply = None
+    status = None
+
+    if request.method == 'POST':
+        nickname = request.form.get('nickname', '').strip()
+        email    = request.form.get('email', '').strip().lower()
+        pin      = request.form.get('pin', '').strip()
+
+        if not all([nickname, email, pin]) or len(pin) != 4 or not pin.isdigit():
+            flash('모든 항목을 올바르게 입력해주세요.', 'danger')
+            return render_template('auth/reset_view.html')
+
+        req = PasswordResetRequest.query.filter_by(
+            nickname=nickname, email=email
+        ).order_by(PasswordResetRequest.created_at.desc()).first()
+
+        if not req or not req.check_pin(pin):
+            flash('정보가 일치하지 않아요. 별명, 이메일, 비밀 번호를 다시 확인해주세요.', 'danger')
+            return render_template('auth/reset_view.html')
+
+        if req.status == 'pending':
+            status = 'pending'
+        else:
+            status = 'done'
+            reply = req.admin_reply
+
+    return render_template('auth/reset_view.html', reply=reply, status=status)

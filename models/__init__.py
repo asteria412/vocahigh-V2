@@ -5,3 +5,4 @@ from .reply import Reply
 from .vocab_list import VocabList
 from .vocab_word import VocabWord
 from .score import Score
+from .password_reset import PasswordResetRequest

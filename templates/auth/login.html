@@ -52,5 +52,9 @@
         계정이 없어요?
         <a href="{{ url_for('auth.register') }}">회원가입</a>
     </p>
+    <p class="form-page__footer">
+        비밀번호를 잊으셨나요?
+        <a href="{{ url_for('auth.reset_request') }}">재설정 요청하기</a>
+    </p>
 </div>
 {% endblock %}
