@@ -2,15 +2,13 @@
 # blueprints/writing/routes.py - HSK 작문 연습 (99번 / 100번)
 # =====================================================================
 
-import json
-import os
-import uuid
 from flask import render_template, request, redirect, url_for, flash, session
 from flask_login import login_required, current_user
 from extensions import db
 from models.vocab_list import VocabList
 from models.vocab_word import VocabWord
 from models.score import Score, QUIZ_TYPE_WRITING99, QUIZ_TYPE_WRITING100
+from core.temp_store import save_temp, load_temp, delete_temp
 from services.llm import (
     generate_hybrid_question_99,
     generate_scene_description,
@@ -19,36 +17,7 @@ from services.llm import (
 )
 from blueprints.writing import writing_bp
 
-TEMP_DIR = os.path.join(os.path.dirname(__file__), '..', '..', 'tmp_vocab')
-os.makedirs(TEMP_DIR, exist_ok=True)
-
 MAX_LISTS = 3
-
-
-def _save(prefix, data):
-    key = str(uuid.uuid4())
-    path = os.path.join(TEMP_DIR, f'{prefix}_{key}.json')
-    with open(path, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False)
-    return key
-
-
-def _load(prefix, key):
-    if not key:
-        return None
-    path = os.path.join(TEMP_DIR, f'{prefix}_{key}.json')
-    if not os.path.exists(path):
-        return None
-    with open(path, encoding='utf-8') as f:
-        return json.load(f)
-
-
-def _delete(prefix, key):
-    if not key:
-        return
-    path = os.path.join(TEMP_DIR, f'{prefix}_{key}.json')
-    if os.path.exists(path):
-        os.remove(path)
 
 
 # -------------------------------------------------------------------
@@ -113,7 +82,7 @@ def gen_99():
         'target_zh_list': target_zh_list,
     }
 
-    key = _save('wr99', data)
+    key = save_temp('wr99', data)
     session['wr99_key'] = key
     return redirect(url_for('writing.write_99'))
 
@@ -122,7 +91,7 @@ def gen_99():
 @login_required
 def write_99():
     key = session.get('wr99_key')
-    data = _load('wr99', key)
+    data = load_temp('wr99', key)
     if not data:
         flash('문제가 없어요. 다시 생성해주세요.', 'warning')
         return redirect(url_for('writing.setup_99'))
@@ -133,7 +102,7 @@ def write_99():
 @login_required
 def eval_99():
     key = session.get('wr99_key')
-    data = _load('wr99', key)
+    data = load_temp('wr99', key)
     if not data:
         flash('문제 데이터가 없어요.', 'warning')
         return redirect(url_for('writing.setup_99'))
@@ -155,7 +124,7 @@ def eval_99():
         total=100.0
     ))
     db.session.commit()
-    _delete('wr99', session.pop('wr99_key', None))
+    delete_temp('wr99', session.pop('wr99_key', None))
 
     return render_template('writing/result_99.html',
                            data=data,
@@ -190,7 +159,7 @@ def gen_100():
         'image_url': image_url,
     }
 
-    key = _save('wr100', data)
+    key = save_temp('wr100', data)
     session['wr100_key'] = key
     return redirect(url_for('writing.write_100'))
 
@@ -199,7 +168,7 @@ def gen_100():
 @login_required
 def write_100():
     key = session.get('wr100_key')
-    data = _load('wr100', key)
+    data = load_temp('wr100', key)
     if not data:
         flash('문제가 없어요. 다시 생성해주세요.', 'warning')
         return redirect(url_for('writing.setup_100'))
@@ -210,7 +179,7 @@ def write_100():
 @login_required
 def eval_100():
     key = session.get('wr100_key')
-    data = _load('wr100', key)
+    data = load_temp('wr100', key)
     if not data:
         flash('문제 데이터가 없어요.', 'warning')
         return redirect(url_for('writing.setup_100'))
@@ -232,7 +201,7 @@ def eval_100():
         total=100.0
     ))
     db.session.commit()
-    _delete('wr100', session.pop('wr100_key', None))
+    delete_temp('wr100', session.pop('wr100_key', None))
 
     return render_template('writing/result_100.html',
                            data=data,

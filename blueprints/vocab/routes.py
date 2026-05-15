@@ -9,15 +9,13 @@
 # 5. DB에 저장
 # =====================================================================
 
-import json
-import os
-import uuid
 from flask import render_template, request, redirect, url_for, flash, session
 from flask_login import login_required, current_user
 from extensions import db
 from models.vocab_list import VocabList
 from models.vocab_word import VocabWord
 from core.vocab_parser import change_text_to_vocab_df
+from core.temp_store import save_temp, load_temp, delete_temp
 from services.llm import process_vocab_with_llm
 from blueprints.vocab import vocab_bp
 
@@ -25,35 +23,6 @@ try:
     import pymupdf as fitz
 except ImportError:
     import fitz
-
-TEMP_DIR = os.path.join(os.path.dirname(__file__), '..', '..', 'tmp_vocab')
-os.makedirs(TEMP_DIR, exist_ok=True)
-
-
-def save_pending(words_data, list_name):
-    key = str(uuid.uuid4())
-    path = os.path.join(TEMP_DIR, f'{key}.json')
-    with open(path, 'w', encoding='utf-8') as f:
-        json.dump({'list_name': list_name, 'words': words_data}, f, ensure_ascii=False)
-    return key
-
-
-def load_pending(key):
-    if not key:
-        return None
-    path = os.path.join(TEMP_DIR, f'{key}.json')
-    if not os.path.exists(path):
-        return None
-    with open(path, encoding='utf-8') as f:
-        return json.load(f)
-
-
-def delete_pending(key):
-    if not key:
-        return
-    path = os.path.join(TEMP_DIR, f'{key}.json')
-    if os.path.exists(path):
-        os.remove(path)
 
 
 def extract_text_from_file(file):
@@ -147,7 +116,7 @@ def upload():
 
         # 파싱 결과를 임시 파일에 저장 (세션 4KB 한도 우회)
         words_data = df.to_dict('records')
-        key = save_pending(words_data, list_name)
+        key = save_temp('vocab', {'list_name': list_name, 'words': words_data})
         session['pending_key'] = key
 
         flash(f'총 {len(words_data)}개 단어를 추출했어요{ai_note}. 내용을 확인해주세요.', 'success')
@@ -164,7 +133,7 @@ def upload():
 def review():
     # 임시 파일에서 단어 데이터 로드
     key = session.get('pending_key')
-    pending = load_pending(key)
+    pending = load_temp('vocab', key)
     if not pending:
         return redirect(url_for('vocab.upload'))
 
@@ -213,7 +182,7 @@ def review():
         db.session.commit()
 
         # 임시 파일 정리
-        delete_pending(session.pop('pending_key', None))
+        delete_temp('vocab', session.pop('pending_key', None))
 
         flash(f'"{list_name}" 단어장에 {len(saved_words)}개 단어를 저장했어요!', 'success')
         return redirect(url_for('vocab.index'))

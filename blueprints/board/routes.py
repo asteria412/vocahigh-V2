@@ -7,6 +7,7 @@ from flask_login import login_required, current_user
 from extensions import db
 from models.post import Post
 from models.reply import Reply
+from blueprints.auth.decorators import admin_required
 from blueprints.board import board_bp
 
 POSTS_PER_PAGE = 10
@@ -125,10 +126,8 @@ def delete(post_id):
 # -------------------------------------------------------------------
 @board_bp.route('/<int:post_id>/reply/<int:reply_id>/delete', methods=['POST'])
 @login_required
+@admin_required
 def delete_reply(post_id, reply_id):
-    if not current_user.is_admin:
-        abort(403)
-
     reply = Reply.query.get_or_404(reply_id)
     post  = Post.query.get_or_404(post_id)
 

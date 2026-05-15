@@ -70,9 +70,12 @@ def create_app(config_name='default'):
         return render_template('errors/404.html'), 404
 
     # -------------------------------------------------------------------
-    # DB 테이블 자동 생성
+    # DB 테이블 자동 생성 + 임시 파일 청소
     # -------------------------------------------------------------------
     with app.app_context():
         db.create_all()
+
+    from core.temp_store import cleanup_old_temps
+    cleanup_old_temps()
 
     return app

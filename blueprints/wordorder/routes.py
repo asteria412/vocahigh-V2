@@ -2,51 +2,20 @@
 # blueprints/wordorder/routes.py - 어순 배열 연습
 # =====================================================================
 
-import json
-import os
 import re
 import random
-import uuid
 from flask import render_template, request, redirect, url_for, flash, session
 from flask_login import login_required, current_user
 from extensions import db
 from models.vocab_list import VocabList
 from models.vocab_word import VocabWord
 from models.score import Score, QUIZ_TYPE_WORDORDER
+from core.temp_store import save_temp, load_temp, delete_temp
 from services.llm import generate_sentence_puzzle
 from blueprints.wordorder import wordorder_bp
 
-TEMP_DIR = os.path.join(os.path.dirname(__file__), '..', '..', 'tmp_vocab')
-os.makedirs(TEMP_DIR, exist_ok=True)
-
 MAX_LISTS = 3
 MAX_WORDS = 3
-
-
-def _save_puzzle(data):
-    key = str(uuid.uuid4())
-    path = os.path.join(TEMP_DIR, f'wo_{key}.json')
-    with open(path, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False)
-    return key
-
-
-def _load_puzzle(key):
-    if not key:
-        return None
-    path = os.path.join(TEMP_DIR, f'wo_{key}.json')
-    if not os.path.exists(path):
-        return None
-    with open(path, encoding='utf-8') as f:
-        return json.load(f)
-
-
-def _delete_puzzle(key):
-    if not key:
-        return
-    path = os.path.join(TEMP_DIR, f'wo_{key}.json')
-    if os.path.exists(path):
-        os.remove(path)
 
 
 # -------------------------------------------------------------------
@@ -100,8 +69,6 @@ def words():
         'pos': w.pos or '',
         'list_name': list_names.get(w.vocab_list_id, '')
     } for w in all_words]
-
-    session['wo_list_ids'] = selected_ids
 
     return render_template('wordorder/pick.html',
                            word_list=word_list,
@@ -162,7 +129,7 @@ def generate():
     random.shuffle(pieces)
     puzzle['shuffled_pieces'] = pieces
 
-    key = _save_puzzle(puzzle)
+    key = save_temp('wo', puzzle)
     session['wo_key'] = key
 
     return redirect(url_for('wordorder.play'))
@@ -175,7 +142,7 @@ def generate():
 @login_required
 def play():
     key = session.get('wo_key')
-    puzzle = _load_puzzle(key)
+    puzzle = load_temp('wo', key)
     if not puzzle:
         flash('문제 데이터가 없어요. 다시 시작해주세요.', 'warning')
         return redirect(url_for('wordorder.setup'))
@@ -190,7 +157,7 @@ def play():
 @login_required
 def check():
     key = session.get('wo_key')
-    puzzle = _load_puzzle(key)
+    puzzle = load_temp('wo', key)
     if not puzzle:
         flash('문제 데이터가 없어요. 다시 시작해주세요.', 'warning')
         return redirect(url_for('wordorder.setup'))
@@ -203,18 +170,17 @@ def check():
 
     is_correct = normalize(user_sentence) == normalize(correct_sentence)
 
-    if is_correct:
-        db.session.add(Score(
-            user_id=current_user.id,
-            quiz_type=QUIZ_TYPE_WORDORDER,
-            score=100.0,
-            total=100.0
-        ))
-        db.session.commit()
+    db.session.add(Score(
+        user_id=current_user.id,
+        quiz_type=QUIZ_TYPE_WORDORDER,
+        score=100.0 if is_correct else 0.0,
+        total=100.0
+    ))
+    db.session.commit()
 
     # 오답이면 다시 시도 가능하도록 temp 파일 유지
     if is_correct:
-        _delete_puzzle(session.pop('wo_key', None))
+        delete_temp('wo', session.pop('wo_key', None))
 
     return render_template('wordorder/result.html',
                            puzzle=puzzle,

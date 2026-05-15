@@ -2,49 +2,18 @@
 # blueprints/quiz/routes.py - 주관식 단어 시험
 # =====================================================================
 
-import json
-import os
 import re
 import random
-import uuid
 from flask import render_template, request, redirect, url_for, flash, session
 from flask_login import login_required, current_user
 from extensions import db
 from models.vocab_list import VocabList
 from models.vocab_word import VocabWord
 from models.score import Score, QUIZ_TYPE_VOCAB
+from core.temp_store import save_temp, load_temp, delete_temp
 from blueprints.quiz import quiz_bp
 
-TEMP_DIR = os.path.join(os.path.dirname(__file__), '..', '..', 'tmp_vocab')
-os.makedirs(TEMP_DIR, exist_ok=True)
-
 MAX_LISTS = 3
-
-
-def _save_quiz(questions):
-    key = str(uuid.uuid4())
-    path = os.path.join(TEMP_DIR, f'quiz_{key}.json')
-    with open(path, 'w', encoding='utf-8') as f:
-        json.dump(questions, f, ensure_ascii=False)
-    return key
-
-
-def _load_quiz(key):
-    if not key:
-        return None
-    path = os.path.join(TEMP_DIR, f'quiz_{key}.json')
-    if not os.path.exists(path):
-        return None
-    with open(path, encoding='utf-8') as f:
-        return json.load(f)
-
-
-def _delete_quiz(key):
-    if not key:
-        return
-    path = os.path.join(TEMP_DIR, f'quiz_{key}.json')
-    if os.path.exists(path):
-        os.remove(path)
 
 
 def check_answer(user_input, correct_answer):
@@ -125,7 +94,7 @@ def start():
             'type': q_type,
         })
 
-    key = _save_quiz(questions)
+    key = save_temp('quiz', questions)
     session['quiz_key'] = key
 
     return redirect(url_for('quiz.take'))
@@ -138,7 +107,7 @@ def start():
 @login_required
 def take():
     key = session.get('quiz_key')
-    questions = _load_quiz(key)
+    questions = load_temp('quiz', key)
     if not questions:
         flash('시험 데이터가 없어요. 다시 시작해주세요.', 'warning')
         return redirect(url_for('quiz.setup'))
@@ -154,7 +123,7 @@ def take():
 @login_required
 def submit():
     key = session.get('quiz_key')
-    questions = _load_quiz(key)
+    questions = load_temp('quiz', key)
     if not questions:
         flash('시험 데이터가 없어요. 다시 시작해주세요.', 'warning')
         return redirect(url_for('quiz.setup'))
@@ -196,7 +165,7 @@ def submit():
         db.session.commit()
 
     # 임시 파일 정리
-    _delete_quiz(session.pop('quiz_key', None))
+    delete_temp('quiz', session.pop('quiz_key', None))
 
     return render_template('quiz/result.html',
                            results=results,
