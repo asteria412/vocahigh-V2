@@ -239,7 +239,6 @@ ui/
 app.py
 .streamlit/
 vocahigh_icon_no_bg.png
-플로우차트.png
 
 # V1 서비스 중 MySQL로 대체된 파일
 services/google_sheets.py
