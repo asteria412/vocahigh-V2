@@ -19,26 +19,25 @@ def is_valid_email(email):
     return re.match(pattern, email) is not None
 
 
-def validate_register_form(name, nickname, email, password, password_confirm):
-    """
-    회원가입 폼 유효성 검사.
-    문제가 있으면 에러 메시지 리스트를 반환, 없으면 빈 리스트 반환.
-    """
+def validate_register_form(nickname, email, password, password_confirm):
     errors = []
-
-    if not name or len(name.strip()) < 2:
-        errors.append('이름은 2자 이상 입력해주세요.')
 
     if not nickname or len(nickname.strip()) < 2:
         errors.append('별명은 2자 이상 입력해주세요.')
     elif len(nickname.strip()) > 30:
         errors.append('별명은 30자 이하로 입력해주세요.')
+    elif not re.match(r'^[가-힣a-zA-Z0-9_\-]+$', nickname.strip()):
+        errors.append('별명은 한글, 영문, 숫자, _, - 만 사용할 수 있어요.')
 
     if not email or not is_valid_email(email):
         errors.append('올바른 이메일 주소를 입력해주세요.')
+    elif len(email) > 120:
+        errors.append('이메일 주소가 너무 길어요.')
 
     if not password or len(password) < 6:
         errors.append('비밀번호는 6자 이상 입력해주세요.')
+    elif len(password) > 100:
+        errors.append('비밀번호가 너무 길어요.')
 
     if password != password_confirm:
         errors.append('비밀번호가 일치하지 않아요.')
@@ -56,43 +55,39 @@ def register():
         return redirect(url_for('main.home'))
 
     if request.method == 'POST':
-        # 폼에서 입력값 가져오기 (.strip()으로 앞뒤 공백 제거)
-        name             = request.form.get('name', '').strip()
         nickname         = request.form.get('nickname', '').strip()
         email            = request.form.get('email', '').strip().lower()
         password         = request.form.get('password', '')
         password_confirm = request.form.get('password_confirm', '')
-        # 체크박스는 체크됐을 때만 값이 전송됨. 없으면 None.
         privacy_agree    = request.form.get('privacy_agree')
 
-        # 1. 개인정보 동의 확인 (가장 먼저 체크)
+        # 1. 개인정보 동의 확인
         if not privacy_agree:
             flash('개인정보 수집에 동의해주세요.', 'danger')
             return render_template('auth/register.html',
-                                   form_data={'name': name, 'nickname': nickname, 'email': email})
+                                   form_data={'nickname': nickname, 'email': email})
 
-        # 2. 나머지 유효성 검사
-        errors = validate_register_form(name, nickname, email, password, password_confirm)
+        # 2. 유효성 검사
+        errors = validate_register_form(nickname, email, password, password_confirm)
         if errors:
             for error in errors:
                 flash(error, 'danger')
-            # 입력값을 다시 폼에 채워서 보내줌 (비밀번호 제외)
             return render_template('auth/register.html',
-                                   form_data={'name': name, 'nickname': nickname, 'email': email})
+                                   form_data={'nickname': nickname, 'email': email})
 
-        # 2. 중복 확인
+        # 3. 중복 확인
         if User.query.filter_by(email=email).first():
             flash('이미 사용 중인 이메일이에요.', 'danger')
             return render_template('auth/register.html',
-                                   form_data={'name': name, 'nickname': nickname, 'email': email})
+                                   form_data={'nickname': nickname, 'email': email})
 
         if User.query.filter_by(nickname=nickname).first():
             flash('이미 사용 중인 별명이에요.', 'danger')
             return render_template('auth/register.html',
-                                   form_data={'name': name, 'nickname': nickname, 'email': email})
+                                   form_data={'nickname': nickname, 'email': email})
 
-        # 3. 새 유저 생성 + 비밀번호 해싱
-        new_user = User(name=name, nickname=nickname, email=email)
+        # 4. 새 유저 생성 (name 컬럼은 nickname으로 채움)
+        new_user = User(name=nickname, nickname=nickname, email=email)
         new_user.set_password(password)
 
         # 4. DB에 저장

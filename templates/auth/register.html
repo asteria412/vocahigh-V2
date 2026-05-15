@@ -7,21 +7,6 @@
 
     <form method="POST" action="{{ url_for('auth.register') }}" novalidate>
 
-        <!-- 이름 -->
-        <div class="form-group">
-            <label class="form-label" for="name">이름</label>
-            <input
-                class="form-input"
-                type="text"
-                id="name"
-                name="name"
-                placeholder="홍길동"
-                value="{{ form_data.get('name', '') }}"
-                autocomplete="name"
-                required
-            >
-        </div>
-
         <!-- 별명 -->
         <div class="form-group">
             <label class="form-label" for="nickname">
