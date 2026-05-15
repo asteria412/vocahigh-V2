@@ -57,6 +57,36 @@ def create_app(config_name='default'):
     app.register_blueprint(dashboard_bp, url_prefix='/dashboard')      # /dashboard/
 
     # -------------------------------------------------------------------
+    # 뱃지 카운트 context processor (모든 템플릿에서 사용 가능)
+    # -------------------------------------------------------------------
+    from flask_login import current_user
+
+    @app.context_processor
+    def inject_badge_counts():
+        if not current_user.is_authenticated:
+            return dict(badge_board=0, badge_reset=0, badge_total=0)
+
+        from models.post import Post
+        from models.password_reset import PasswordResetRequest
+
+        if current_user.is_admin:
+            badge_board = Post.query.filter_by(is_answered=False).count()
+            badge_reset = PasswordResetRequest.query.filter_by(status='pending').count()
+        else:
+            badge_board = Post.query.filter_by(
+                user_id=current_user.id,
+                is_answered=True,
+                reply_viewed=False
+            ).count()
+            badge_reset = 0
+
+        return dict(
+            badge_board=badge_board,
+            badge_reset=badge_reset,
+            badge_total=badge_board + badge_reset
+        )
+
+    # -------------------------------------------------------------------
     # 에러 핸들러 등록
     # -------------------------------------------------------------------
     from flask import render_template

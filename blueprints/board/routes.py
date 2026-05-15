@@ -98,10 +98,16 @@ def detail(post_id):
         db.session.add(reply)
 
         post.is_answered = True
+        post.reply_viewed = False
         db.session.commit()
 
         flash('답변이 등록됐어요.', 'success')
         return redirect(url_for('board.detail', post_id=post_id))
+
+    # 유저가 답변 있는 글을 열면 읽음 처리
+    if not current_user.is_admin and post.is_answered and not post.reply_viewed:
+        post.reply_viewed = True
+        db.session.commit()
 
     replies = post.replies.order_by(Reply.created_at.asc()).all()
     return render_template('board/detail.html', post=post, replies=replies)

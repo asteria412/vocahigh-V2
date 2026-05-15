@@ -22,6 +22,9 @@ class Post(db.Model):
     # 답변 상태: False = 답변 대기, True = 답변 완료
     is_answered = db.Column(db.Boolean, default=False)
 
+    # 유저가 답변을 읽었는지 여부 (False = 새 답변 있음)
+    reply_viewed = db.Column(db.Boolean, default=True)
+
     # 작성 날짜
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 

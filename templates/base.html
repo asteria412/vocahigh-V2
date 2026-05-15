@@ -43,7 +43,9 @@
                 <a href="{{ url_for('writing.index') }}" class="nav-link {% if request.endpoint and request.endpoint.startswith('writing') %}nav-link--active{% endif %}">작문</a>
                 <a href="{{ url_for('dictionary.index') }}" class="nav-link {% if request.endpoint and request.endpoint.startswith('dictionary') %}nav-link--active{% endif %}">사전</a>
                 <a href="{{ url_for('dashboard.index') }}" class="nav-link {% if request.endpoint and request.endpoint.startswith('dashboard') %}nav-link--active{% endif %}">대시보드</a>
-                <a href="{{ url_for('board.list') }}" class="nav-link {% if request.endpoint and request.endpoint.startswith('board') %}nav-link--active{% endif %}">학습상담</a>
+                <a href="{{ url_for('board.list') }}" class="nav-link {% if request.endpoint and request.endpoint.startswith('board') %}nav-link--active{% endif %}">
+                    학습상담{% if badge_board > 0 %}<span class="nav-badge">{{ badge_board }}</span>{% endif %}
+                </a>
                 <a href="{{ url_for('auth.change_password') }}" class="nav-link {% if request.endpoint == 'auth.change_password' %}nav-link--active{% endif %}">비밀번호 변경</a>
                 <a href="{{ url_for('auth.logout') }}" class="nav-link">로그아웃</a>
             </div>
@@ -127,6 +129,7 @@
                 <circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>
             </svg>
             <span>더보기</span>
+            {% if badge_total > 0 %}<span class="bottom-nav__badge">{{ badge_total }}</span>{% endif %}
         </button>
     </nav>
 
@@ -150,8 +153,16 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                 </svg>
-                학습상담
+                학습상담{% if badge_board > 0 %}<span class="nav-badge">{{ badge_board }}</span>{% endif %}
             </a>
+            {% if current_user.is_admin and badge_reset > 0 %}
+            <a href="{{ url_for('board.reset_requests') }}" class="bottom-more__item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                비번 재설정 요청<span class="nav-badge">{{ badge_reset }}</span>
+            </a>
+            {% endif %}
             <a href="{{ url_for('auth.change_password') }}" class="bottom-more__item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
