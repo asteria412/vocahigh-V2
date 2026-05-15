@@ -203,6 +203,15 @@
                     .catch(function(err) { console.log('SW 등록 실패:', err); });
             });
         }
+
+        // 앱 아이콘 뱃지 (Web App Badging API - iOS 16.4+, Android Chrome)
+        if ('setAppBadge' in navigator) {
+            {% if current_user.is_authenticated and badge_total > 0 %}
+            navigator.setAppBadge({{ badge_total }});
+            {% else %}
+            navigator.clearAppBadge();
+            {% endif %}
+        }
     </script>
 </body>
 </html>
