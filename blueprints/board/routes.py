@@ -145,6 +145,14 @@ def delete(post_id):
 @login_required
 @admin_required
 def reset_requests():
+    from datetime import datetime, timedelta
+    cutoff = datetime.utcnow() - timedelta(days=7)
+    PasswordResetRequest.query.filter(
+        PasswordResetRequest.status == 'done',
+        PasswordResetRequest.created_at < cutoff
+    ).delete()
+    db.session.commit()
+
     requests = PasswordResetRequest.query\
                    .order_by(PasswordResetRequest.created_at.desc()).all()
     return render_template('board/reset_requests.html', requests=requests)
