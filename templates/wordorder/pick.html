@@ -83,7 +83,7 @@
     randomBtn.addEventListener('click', () => {
         checkboxes.forEach(cb => { cb.checked = false; });
         const all = [...checkboxes];
-        const count = Math.floor(Math.random() * MAX) + 1; // 1~MAX
+        const count = MAX;
         const shuffled = all.sort(() => Math.random() - 0.5).slice(0, count);
         shuffled.forEach(cb => { cb.checked = true; });
         updateUI();
