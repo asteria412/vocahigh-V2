@@ -64,6 +64,8 @@
 
 {% block extra_scripts %}
 <script>
-    // 탭 시 키보드 재활성화 (iPad 펜슬 Scribble 후)
+    document.querySelectorAll('.form-input[type="text"]').forEach(function (el) {
+        el.addEventListener('touchend', function () { this.focus(); });
+    });
 </script>
 {% endblock %}

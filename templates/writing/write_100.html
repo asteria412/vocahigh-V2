@@ -71,6 +71,6 @@
     const input = document.getElementById('writing-input');
     const counter = document.getElementById('char-count');
     input.addEventListener('input', () => { counter.textContent = input.value.length; });
-
+    input.addEventListener('touchend', function () { this.focus(); });
 </script>
 {% endblock %}
