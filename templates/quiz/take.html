@@ -65,7 +65,11 @@
 {% block extra_scripts %}
 <script>
     document.querySelectorAll('.form-input[type="text"]').forEach(function (el) {
-        el.addEventListener('touchend', function () { this.focus(); });
+        el.addEventListener('touchend', function () {
+            var input = this;
+            input.blur();
+            setTimeout(function () { input.focus(); }, 0);
+        });
     });
 </script>
 {% endblock %}
