@@ -72,14 +72,5 @@
     const counter = document.getElementById('char-count');
     input.addEventListener('input', () => { counter.textContent = input.value.length; });
 
-    // iPad 펜슬 Scribble 후 탭 시 키보드 재활성화
-    input.addEventListener('touchend', function () {
-        var el = this;
-        el.readOnly = true;
-        setTimeout(function() {
-            el.readOnly = false;
-            el.focus();
-        }, 100);
-    });
 </script>
 {% endblock %}
