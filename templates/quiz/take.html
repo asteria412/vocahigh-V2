@@ -69,9 +69,11 @@
         el.addEventListener('touchend', function () {
             var input = this;
             input.readOnly = true;
-            input.readOnly = false;
-            input.focus();
-        }, { passive: true });
+            setTimeout(function() {
+                input.readOnly = false;
+                input.focus();
+            }, 100);
+        });
     });
 </script>
 {% endblock %}
