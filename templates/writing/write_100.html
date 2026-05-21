@@ -72,8 +72,12 @@
     const counter = document.getElementById('char-count');
     input.addEventListener('input', () => { counter.textContent = input.value.length; });
     input.addEventListener('touchend', function () {
-        input.blur();
-        setTimeout(function () { input.focus(); }, 0);
+        var kbVisible = window.visualViewport &&
+                        window.visualViewport.height < window.innerHeight * 0.8;
+        if (!kbVisible) {
+            input.blur();
+            setTimeout(function () { input.focus(); }, 50);
+        }
     });
 </script>
 {% endblock %}
