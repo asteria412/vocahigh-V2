@@ -64,8 +64,17 @@
 
 {% block extra_scripts %}
 <script>
+    var kbEverShown = false;
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', function () {
+            if (window.visualViewport.height < window.innerHeight * 0.8) {
+                kbEverShown = true;
+            }
+        });
+    }
     document.querySelectorAll('.form-input[type="text"]').forEach(function (el) {
         el.addEventListener('touchend', function () {
+            if (!kbEverShown) return;
             var input = this;
             var kbVisible = window.visualViewport &&
                             window.visualViewport.height < window.innerHeight * 0.8;

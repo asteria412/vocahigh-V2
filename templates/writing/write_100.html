@@ -71,7 +71,16 @@
     const input = document.getElementById('writing-input');
     const counter = document.getElementById('char-count');
     input.addEventListener('input', () => { counter.textContent = input.value.length; });
+    var kbEverShown = false;
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', function () {
+            if (window.visualViewport.height < window.innerHeight * 0.8) {
+                kbEverShown = true;
+            }
+        });
+    }
     input.addEventListener('touchend', function () {
+        if (!kbEverShown) return;
         var kbVisible = window.visualViewport &&
                         window.visualViewport.height < window.innerHeight * 0.8;
         if (!kbVisible) {
