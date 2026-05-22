@@ -304,6 +304,31 @@
             }
         })();
 
+        // iOS PWA 키보드 재표시 — 전역 fix (모든 입력창 커버)
+        (function() {
+            if (!window.visualViewport) return;
+            var TEXT_TYPES = ['text', 'email', 'password', 'search', 'tel', 'url', 'number'];
+
+            function forceKeyboard(el) {
+                var dummy = document.createElement('input');
+                dummy.setAttribute('type', 'text');
+                dummy.style.cssText = 'position:fixed;width:1px;height:1px;opacity:0;top:0;left:0;';
+                document.body.appendChild(dummy);
+                dummy.focus();
+                el.focus();
+                dummy.remove();
+            }
+
+            document.addEventListener('touchend', function(e) {
+                var el = e.target;
+                if (el.tagName !== 'INPUT' && el.tagName !== 'TEXTAREA') return;
+                if (el.tagName === 'INPUT' && TEXT_TYPES.indexOf(el.type) === -1) return;
+                if (document.activeElement !== el) return;
+                var kbVisible = window.visualViewport.height < window.innerHeight * 0.8;
+                if (!kbVisible) forceKeyboard(el);
+            });
+        })();
+
     </script>
 </body>
 </html>
