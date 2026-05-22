@@ -64,24 +64,22 @@
 
 {% block extra_scripts %}
 <script>
-    var kbEverShown = false;
-    if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', function () {
-            if (window.visualViewport.height < window.innerHeight * 0.8) {
-                kbEverShown = true;
-            }
-        });
+    function forceKeyboard(input) {
+        var dummy = document.createElement('input');
+        dummy.setAttribute('type', 'text');
+        dummy.style.cssText = 'position:fixed;width:1px;height:1px;opacity:0;top:0;left:0;';
+        document.body.appendChild(dummy);
+        dummy.focus();
+        input.focus();
+        dummy.remove();
     }
+
     document.querySelectorAll('.form-input[type="text"]').forEach(function (el) {
         el.addEventListener('touchend', function () {
-            if (!kbEverShown) return;
-            var input = this;
+            if (document.activeElement !== this) return;
             var kbVisible = window.visualViewport &&
                             window.visualViewport.height < window.innerHeight * 0.8;
-            if (!kbVisible) {
-                input.blur();
-                setTimeout(function () { input.focus(); }, 50);
-            }
+            if (!kbVisible) forceKeyboard(this);
         });
     });
 </script>

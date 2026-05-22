@@ -61,22 +61,22 @@
     const input = document.getElementById('writing-input');
     const counter = document.getElementById('char-count');
     input.addEventListener('input', () => { counter.textContent = input.value.length; });
-    var kbEverShown = false;
-    if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', function () {
-            if (window.visualViewport.height < window.innerHeight * 0.8) {
-                kbEverShown = true;
-            }
-        });
+
+    function forceKeyboard(el) {
+        var dummy = document.createElement('input');
+        dummy.setAttribute('type', 'text');
+        dummy.style.cssText = 'position:fixed;width:1px;height:1px;opacity:0;top:0;left:0;';
+        document.body.appendChild(dummy);
+        dummy.focus();
+        el.focus();
+        dummy.remove();
     }
+
     input.addEventListener('touchend', function () {
-        if (!kbEverShown) return;
+        if (document.activeElement !== input) return;
         var kbVisible = window.visualViewport &&
                         window.visualViewport.height < window.innerHeight * 0.8;
-        if (!kbVisible) {
-            input.blur();
-            setTimeout(function () { input.focus(); }, 50);
-        }
+        if (!kbVisible) forceKeyboard(input);
     });
 </script>
 {% endblock %}
