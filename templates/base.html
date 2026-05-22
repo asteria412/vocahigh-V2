@@ -308,6 +308,7 @@
         (function() {
             if (!window.visualViewport) return;
             var TEXT_TYPES = ['text', 'email', 'password', 'search', 'tel', 'url', 'number'];
+            var scrolled = false;
 
             function forceKeyboard(el) {
                 var dummy = document.createElement('input');
@@ -319,11 +320,14 @@
                 dummy.remove();
             }
 
+            document.addEventListener('touchstart', function() { scrolled = false; }, { passive: true });
+            document.addEventListener('touchmove',  function() { scrolled = true;  }, { passive: true });
+
             document.addEventListener('touchend', function(e) {
+                if (scrolled) return;
                 var el = e.target;
                 if (el.tagName !== 'INPUT' && el.tagName !== 'TEXTAREA') return;
                 if (el.tagName === 'INPUT' && TEXT_TYPES.indexOf(el.type) === -1) return;
-                if (document.activeElement !== el) return;
                 var kbVisible = window.visualViewport.height < window.innerHeight * 0.8;
                 if (!kbVisible) forceKeyboard(el);
             });
